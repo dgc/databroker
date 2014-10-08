@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var devices = require('./routes/devices');
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/devices', devices);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -58,3 +60,36 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
+
+
+// This is a stop-gap configuration to get started.
+
+configuration = {
+
+  devices: {
+
+    "rPI_46_1047_1": {
+
+      label: "Raspberry PI in physics lab",
+
+      sensors: {
+
+        "10-000802b42b40": { label: "Temperature sensor 1", units_label: "Celcius" },
+        "10-000802b44f21": { label: "Temperature sensor 2", units_label: "Celcius" },
+        "10-000802b49201": { label: "Temperature sensor 3", units_label: "Celcius" },
+        "10-000802b4b181": { label: "Temperature sensor 4", units_label: "Celcius" },
+      }
+    },
+
+    "Arduino_30_1081_1": {
+
+      label: "Arduino in Matt's lab",
+
+      sensors: {
+
+        "A0": { label: "Temperature sensor", units_label: "Celcius" },
+      }
+    }
+  }
+}
