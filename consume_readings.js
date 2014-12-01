@@ -1,48 +1,62 @@
-// Script to consume the log file from rPI_46_1047_1
+// Script to consume the DataBroker events
 
-var device = "rPI_46_1047_1";
-
-var sensor1 = "10-000802b42b40";
-var sensor2 = "10-000802b44f21";
-var sensor3 = "10-000802b49201";
-var sensor4 = "10-000802b4b181";
-
-var redis = require("redis");
-var client = redis.createClient();
+var mqtt_server = 'labbroker.soton.ac.uk';
+var mqtt_port = 1883;
 
 var fs = require('fs');
-var filename = process.argv[2];
-var readline = require('readline');
-var sprintf = require("sprintf-js").sprintf;
+var sprintf = require('sprintf-js').sprintf;
+var mqtt = require('mqtt');
+var redis = require('redis');
+var _ = require('underscore');
 
-function logResult(key_bits, value) {
-  var key = key_bits.join(" ");
-  client.set(key, value);
-}
+var mqtt_client = mqtt.createClient(mqtt_port, mqtt_server);
+var redis_client = redis.createClient();
 
-readline.createInterface({
+fs.readFile('conf/conf.json', 'utf8', function (err, configuration_text) {
 
-  input: fs.createReadStream(filename),
-  terminal: false
+  if (err)
+    throw err;
 
-}).on('line', function(line) {
+  var configuration = JSON.parse(configuration_text);
 
-  bits = line.match(/(\d+)\t(\d+)\t(\d+)\t(\d+)\t(\d+)/)
+  mqtt_client.on('message', function (topic, message) {
+ 
+    try {
 
-  if (bits) {
-    
-    var date = new Date(parseInt(bits[1], 10) * 1000);
+      var data = JSON.parse(message);
 
-    var base = sprintf("%04d-%02d-%02d %02d:%02d:%02d", date.getFullYear(),
-        date.getMonth(), date.getDay(), date.getHours(), date.getMinutes(),
-        date.getSeconds());
+      data.log_timestamp = Math.floor(Date.now() / 1000);
 
-    logResult([base, device, sensor1], bits[2]);
-    logResult([base, device, sensor2], bits[3]);
-    logResult([base, device, sensor3], bits[4]);
-    logResult([base, device, sensor4], bits[5]);
-  }
-}).on('close', function() {
+      var date = new Date(parseInt(data['timestamp'], 10) * 1000);
 
-  client.quit();
+      var base = sprintf('%02d-%02d-%02d', date.getFullYear(),
+        date.getMonth() + 1, date.getDate());
+
+      var key = base + " " + topic;
+
+      redis_client.get(key, function (err, entry) {
+
+        if (entry == null) {
+          entry = [];
+        } else {
+          entry = JSON.parse(entry);
+        }
+
+        entry.push(data);
+
+        redis_client.set(key, JSON.stringify(entry));
+      });
+
+    } catch (ex) {
+      console.log(ex);
+      console.log('Failed to process (' + topic + '): ' + message);
+    }
+  });
+
+  _.each(_.keys(configuration.devices), function (device_id) {
+
+    console.log("Subscribed to: " + configuration.devices[device_id].label);
+
+    mqtt_client.subscribe(device_id);
+  });
 });
