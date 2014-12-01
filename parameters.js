@@ -1,3 +1,5 @@
+var configuration = require('./configuration');
+
 function findDevice(req, res, next, device_id) {
 
   if (configuration.devices[device_id] === undefined) {

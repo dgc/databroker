@@ -1,0 +1,11 @@
+extends layout
+
+block content
+
+  h1 Devices
+
+  ul
+    each device in devices
+      li
+        a(href=device[0]) #{device[1]}
+    

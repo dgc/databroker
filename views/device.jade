@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1= device_label
+
+  h2 Readings
+
+  p= months
+
+  h2 Sensors
+
+  ul
+    each sensor in sensors
+      li
+        a(href=sensor[0]) #{sensor[1]}
