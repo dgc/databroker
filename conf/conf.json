@@ -1,0 +1,39 @@
+{
+  "devices": {
+
+    "Arduino_Test" : {
+
+      "label": "Test sensor in 30/1069",
+
+      "sensors": {
+
+        "A1" : { "label": "Light level" },
+        "DHT_TEMP" : { "label": "DHT Temperature", "units_label": "Celcius" },
+        "DHT_HUMIDITY" : { "label": "DHT Humidity" }
+      }
+    },
+
+    "rPI_46_1047_1": {
+
+      "label": "Raspberry PI in physics lab",
+
+      "sensors": {
+
+        "10-000802b42b40": { "label": "Adam's Box", "type": "temperature", "sensor_model": "rht03", "units_label": "Celcius" },
+        "10-000802b44f21": { "label": "Pete's Box", "type": "temperature", "sensor_model": "rht03", "units_label": "Celcius" },
+        "10-000802b49201": { "label": "Ed's Box",   "type": "temperature", "sensor_model": "rht03", "units_label": "Celcius" },
+        "10-000802b4b181": { "label": "Laser",      "type": "temperature", "sensor_model": "rht03", "units_label": "Celcius" }
+      }
+    },
+
+    "Arduino_30_1081_1": {
+
+      "label": "Arduino in Matt's lab",
+
+      "sensors": {
+
+        "A0": { "label": "Temperature sensor", "units_label": "Celcius" }
+      }
+    }
+  }
+}
