@@ -8,6 +8,7 @@ var _ = require('underscore');
 var configuration = require('../configuration');
 var redis = require("redis");
 var csv = require('csv');
+var dateformat = require('dateformat');
 
 var redis_client = redis.createClient();
 
@@ -22,7 +23,13 @@ router.get('/', function(req, res) {
     return ["/devices/" + key, configuration.devices[key].label];
   });
 
-  res.render('devices', { devices: devices });
+  res.render('devices', {
+    breadcrumbs: [
+      { label: 'Home', uri: '/' },
+      { label: 'Devices' }
+    ],
+    devices: devices
+  });
 });
 
 function get_log_days(device_id, result_func) {
@@ -43,13 +50,24 @@ router.get('/:device_id', function(req, res) {
       configuration.devices[device_id].sensors[key].label];
   });
 
-  var months = 45;
-
   get_log_days(req.device_id, function (err, days) {
-    console.log(days);
+
+    readings = _.map(days.sort(), function(day) {
+      return ["/devices/" + device_id + "/data.csv?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10), day.substring(0, 10)];
+    });
+
+    var readings = _.groupBy(readings, function(day) {
+      return day[1].substring(0, 7);
+    });
+
     res.render('device', {
+      breadcrumbs: [
+        { label: 'Home', uri: '/' },
+        { label: 'Devices', uri: '/devices' },
+        { label: configuration.devices[device_id].label }
+      ],
       device_label: configuration.devices[req.device_id].label,
-      months: months,
+      readings: readings,
       sensors: sensors
     });
   });
@@ -58,6 +76,24 @@ router.get('/:device_id', function(req, res) {
 
 router.get('/:device_id/data.:format?', function (req, res) {
   
+  function convert_data(value, column, configuration) {
+    if (configuration[column]) {
+      switch (configuration[column].sensor_model) {
+      case "rht03":
+        return parseInt(value) / 1000.0;
+      case "Voltage":
+        return parseInt(value) / 1024.0 * 5.0;
+      case "FIXME":
+        return parseInt(value) / 1024.0 * 5.0 * 100.0;
+      default:
+        return value;
+      }
+    } else {
+      var date = new Date(parseInt(value) * 1000);
+      return dateformat(date, "yyyy/mm/dd HH:MM:ss");
+    }
+  }
+
   var key_pattern = "\\d\\d\\d\\d-\\d\\d-\\d\\d " + req.device_id;
 
   if (req.query["day"]) {
@@ -76,6 +112,10 @@ router.get('/:device_id/data.:format?', function (req, res) {
         data = data.concat(JSON.parse(readings));
       });
 
+      var sensor_configuration = configuration.devices[req.device_id].sensors;
+
+      var columns = ['timestamp'].concat(_.keys(sensor_configuration));
+
       /* Format the data. */
 
       res.status(200)
@@ -83,15 +123,34 @@ router.get('/:device_id/data.:format?', function (req, res) {
       switch (req.params.format) {
 
         case "csv":
+
           res.header("Content-Type", "text/csv");
+console.log(req.query)
 
-          var columns = ['timestamp'].concat(_.keys(configuration.devices[req.device_id].sensors));
+          column_headers = columns;
 
-          var csv_opts = { columns: columns, header: true };
+          if (req.query["raw"] != "true") {
+            column_headers = _.map(columns, function(column) {
+              if (sensor_configuration[column]) {
+                return sensor_configuration[column].label;
+              } else if (column == "timestamp") {
+                return "Time";
+              } else {
+                return column;
+              }
+            });
+          }
+
+          var csv_opts = { columns: column_headers, header: true };
 
           data = _.map(data, function(row_data) {
             return _.map(columns, function(column) {
-              return row_data[column];
+              var cell = row_data[column];
+
+              if (req.query["raw"] != "true")
+                cell = convert_data(cell, column, sensor_configuration);
+
+              return cell;
             });
           });
 

@@ -5,7 +5,11 @@ block content
 
   h2 Readings
 
-  p= months
+  each group, set in readings
+    h3= set
+    each day in group
+      a(href=day[0]) #{day[1].substring(8, 10)}
+      span= " "
 
   h2 Sensors
 

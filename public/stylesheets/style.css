@@ -1,8 +1,24 @@
 body {
-  padding: 50px;
+  padding: 20px 40px 0 40px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+div.header {
+  border-bottom: 2px solid #ddd;
 }
 
 a {
   color: #00B7FF;
+}
+
+ol.breadcrumbs {
+    padding: 0;
+}
+
+ol.breadcrumbs li {
+    display: inline;
+}
+
+ol.breadcrumbs li + li:before {
+    content: " > ";
 }
