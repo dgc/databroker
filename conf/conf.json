@@ -1,21 +1,9 @@
 {
   "devices": {
 
-    "Arduino_Test" : {
-
-      "label": "Test sensor in 30/1069",
-
-      "sensors": {
-
-        "A1" : { "label": "Light level" },
-        "DHT_TEMP" : { "label": "DHT Temperature", "units_label": "Celcius" },
-        "DHT_HUMIDITY" : { "label": "DHT Humidity" }
-      }
-    },
-
     "rPI_46_1047_1": {
 
-      "label": "Raspberry PI in physics lab",
+      "label": "Raspberry PI in 46:1047",
 
       "sensors": {
 
@@ -28,11 +16,26 @@
 
     "Arduino_30_1081_1": {
 
-      "label": "Arduino in Matt's lab",
+      "label": "Arduino in 30:1081",
 
       "sensors": {
 
-        "A0": { "label": "Temperature sensor", "units_label": "Celcius" }
+        "A0": { "label": "Temperature sensor", "type": "temperature", "sensor_model":"FIXME", "units_label": "Celcius" },
+        "A1": { "label": "Mira", "type": "power", "sensor_model":"Voltage", "units_label": "Voltage" },
+        "A2": { "label": "Photoreceiver", "type": "photoreceiver", "sensor_model":"Voltage", "units_label": "Voltage" }
+      }
+    },
+
+    "Arduino_Test" : {
+
+      "label": "Test sensor in 30:1069",
+
+      "sensors": {
+
+        "A1" : { "label": "Light level" },
+        "A2" : { "label": "Visible Femtowatt Photoreceiver", "units_label": "Watts" },
+        "DHT_TEMP" : { "label": "DHT Temperature", "units_label": "Celcius" },
+        "DHT_HUMIDITY" : { "label": "DHT Humidity" }
       }
     }
   }
