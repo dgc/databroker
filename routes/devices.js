@@ -9,6 +9,10 @@ var configuration = require('../configuration');
 var redis = require("redis");
 var csv = require('csv');
 var dateformat = require('dateformat');
+var fs = require('fs');
+var archiver = require('archiver');
+var libxmljs = require("libxmljs");
+var moment = require('moment');
 
 var redis_client = redis.createClient();
 
@@ -39,6 +43,10 @@ function get_log_days(device_id, result_func) {
   redis_client.keys(key_pattern, function (err, keys) {
     result_func(err, keys)
   });
+}
+
+function dateToExcelDate(date) {
+  return (date / (60 * 60 * 24 * 1000)) + 25569;
 }
 
 router.get('/:device_id', function(req, res) {
@@ -95,12 +103,17 @@ router.get('/:device_id/data.:format?', function (req, res) {
   }
 
   var key_pattern = "\\d\\d\\d\\d-\\d\\d-\\d\\d " + req.device_id;
+  var chartStart;
+  var chartEnd;
 
   if (req.query["day"]) {
     var fields = req.query["day"].match(/^(\d\d\d\d)(\d\d)(\d\d)$/)
 
     if (fields) {
       key_pattern = fields[1] + "-" + fields[2] + "-" + fields[3] + " " + req.device_id;
+
+      chartStart = dateToExcelDate(Date.parse(fields[1] + "-" + fields[2] + "-" + fields[3] + "T00:00:00Z"));
+      chartEnd = chartStart + 1;
     }
   }
 
@@ -125,7 +138,6 @@ router.get('/:device_id/data.:format?', function (req, res) {
         case "csv":
 
           res.header("Content-Type", "text/csv");
-console.log(req.query)
 
           column_headers = columns;
 
@@ -163,6 +175,126 @@ console.log(req.query)
         case "json":
           res.header("Content-Type", "application/json");
           res.end(JSON.stringify(data));
+
+        break;
+
+        case "xlsx":
+          res.attachment('test.xlsx');
+          res.header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+          var archive = archiver('zip');
+
+          archive.on('error', function(err) {
+            res.status(500).send({ error: err.message });
+          });
+
+          res.on('close', function() {
+            res.status(200).send('OK').end();
+          });
+
+          var files = [
+            "xl/workbook.xml",
+            "xl/drawings/drawing1.xml",
+            "xl/drawings/_rels/drawing1.xml.rels",
+            "xl/sharedStrings.xml",
+            "xl/_rels/workbook.xml.rels",
+            "xl/worksheets/sheet2.xml",
+            "xl/worksheets/sheet1.xml",
+            "xl/worksheets/_rels/sheet1.xml.rels",
+            "xl/worksheets/_rels/sheet2.xml.rels",
+            "xl/charts/style1.xml",
+            "xl/charts/colors1.xml",
+            "xl/charts/_rels/chart1.xml.rels",
+            "xl/charts/chart1.xml",
+            "xl/printerSettings/printerSettings1.bin",
+            "xl/theme/theme1.xml",
+            "xl/styles.xml",
+            "docProps/app.xml",
+            "docProps/core.xml",
+            "[Content_Types].xml",
+            "_rels/.rels",
+          ];
+
+          archive.pipe(res);
+
+          _.each(files, function(file) {
+            var filename = 'templates/template1/' + file;
+            var content = fs.readFileSync(filename);
+
+            var ns = {
+              c:  'http://schemas.openxmlformats.org/drawingml/2006/chart',
+              a:  'http://schemas.openxmlformats.org/drawingml/2006/main',
+              ss: 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
+            };
+
+            if (file == 'xl/charts/chart1.xml') {
+
+              var doc = libxmljs.parseXml(content.toString());
+
+              var titleElement = doc.get('/c:chartSpace/c:chart/c:title//a:t', ns);
+              titleElement.text('New title');
+
+              _.each(doc.find('/c:chartSpace/c:chart/c:plotArea/c:valAx', ns), function(valAx) {
+                if (valAx.get('c:title//a:t[. = "Time"]', ns)) {
+                  valAx.get('c:scaling/c:min/@val', ns).value(chartStart);
+                  valAx.get('c:scaling/c:max/@val', ns).value(chartEnd);
+                  // console.log(valAx.get('c:scaling/c:min/@val', ns));
+                }
+              });
+
+              content = doc.toString();
+
+            } else if (file == 'xl/worksheets/sheet1.xml') {
+
+              var doc = libxmljs.parseXml(content.toString());
+
+              var dim_el = doc.find('/ss:worksheet/ss:dimension', ns)[0];
+
+              // Set the overall worksheet dimesion
+              dim_el.attr('ref').value('A1:K' + (data.length + 1));
+
+              var sheet_data = doc.find('/ss:worksheet/ss:sheetData', ns)[0];
+
+              sheet_data.node("row").attr({ r: 1, s: 1, customFormat: 1, spans: "1:11", ht: "68.25" })
+
+                .node('c').attr({ r: "A1", s: "1", t: "s" }).node('v', '9').parent().parent()
+                .node('c').attr({ r: "B1", s: "1", t: "s" }).node('v', '0').parent().parent()
+                .node('c').attr({ r: "C1", s: "1", t: "s" }).node('v', '1').parent().parent()
+                .node('c').attr({ r: "D1", s: "1", t: "s" }).node('v', '2').parent().parent()
+                .node('c').attr({ r: "E1", s: "1", t: "s" }).node('v', '3').parent().parent()
+                .node('c').attr({ r: "G1", s: "2", t: "s" }).node('v', '8').parent().parent()
+                .node('c').attr({ r: "H1", s: "1", t: "s" }).node('v', '4').parent().parent()
+                .node('c').attr({ r: "I1", s: "1", t: "s" }).node('v', '5').parent().parent()
+                .node('c').attr({ r: "J1", s: "1", t: "s" }).node('v', '6').parent().parent()
+                .node('c').attr({ r: "K1", s: "1", t: "s" }).node('v', '7').parent().parent()
+
+              _.each(data, function(row_data, index) {
+ 
+                var row = index + 2;
+ 
+                sheet_data.node("row").attr({ r: row, spans: '1:11' })
+                  .node('c').attr({ r: 'A' + row }).node('v', row_data['timestamp'] + "").parent().parent()
+                  .node('c').attr({ r: 'B' + row }).node('v', row_data['10-000802b42b40'] + "").parent().parent()
+                  .node('c').attr({ r: 'C' + row }).node('v', row_data['10-000802b44f21'] + "").parent().parent()
+                  .node('c').attr({ r: 'D' + row }).node('v', row_data['10-000802b49201'] + "").parent().parent()
+                  .node('c').attr({ r: 'E' + row }).node('v', row_data['10-000802b4b181'] + "").parent().parent()
+                  .node('c').attr({ r: 'G' + row, s: 3 }).node('f', 'A' + row + '/(60*60*24)+"1/1/1970"').parent().node('v', (25569 + (row_data['timestamp'] / (60 * 60 * 24))) + "").parent().parent()
+                  .node('c').attr({ r: 'H' + row }).node('f', 'B' + row + '/1000').parent().node('v', (row_data['10-000802b42b40'] / 1000) + "").parent().parent()
+                  .node('c').attr({ r: 'I' + row }).node('f', 'C' + row + '/1000').parent().node('v', (row_data['10-000802b44f21'] / 1000) + "").parent().parent()
+                  .node('c').attr({ r: 'J' + row }).node('f', 'D' + row + '/1000').parent().node('v', (row_data['10-000802b49201'] / 1000) + "").parent().parent()
+                  .node('c').attr({ r: 'K' + row }).node('f', 'E' + row + '/1000').parent().node('v', (row_data['10-000802b4b181'] / 1000) + "").parent().parent()
+              });
+
+              content = doc.toString();
+            }
+
+            archive.append(content, { name: file });
+          });
+
+          archive.finalize();
+
+        break;
+
       }
     });
   });
