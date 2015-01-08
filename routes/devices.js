@@ -68,6 +68,48 @@ router.get('/:device_id', function(req, res) {
       return day[1].substring(0, 7);
     });
 
+    days = _.map(days, function(day) {
+
+      var date = moment(day.substring(0, 10));
+
+      // Day adjustment, starting from Sunday to get to Monday.
+      var day_adjust = [-6, 0, -1, -2, -3, -4, -5];
+
+      var days_since_sunday = date.day();
+      var days_since_monday = (days_since_sunday + 6) % 7;
+      var start_of_week = date.clone().add(day_adjust[days_since_sunday], 'days');
+      var label = date.format("DD MMM");
+
+      var csv_url = "/devices/" + device_id + "/data.csv?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10);
+
+      var xlsx_url;
+      
+      if (device_id == "rPI_46_1047_1")
+        xlsx_url = "/devices/" + device_id + "/data.xlsx?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10);
+
+      return {
+        key: day,
+        date: date,
+        monday: start_of_week,
+        label: label,
+        dow: days_since_monday,
+        csv: csv_url,
+        xlsx: xlsx_url
+      };
+    })
+
+    var calendar = _.groupBy(days, function(day) {
+      return day.monday;
+    });
+
+    calendar = _.map(calendar, function(days, sow) {
+      week = [];
+      _.each(days, function(day) {
+        week[day.dow] = day;
+      });
+      return [sow, week];
+    });
+
     res.render('device', {
       breadcrumbs: [
         { label: 'Home', uri: '/' },
@@ -76,10 +118,10 @@ router.get('/:device_id', function(req, res) {
       ],
       device_label: configuration.devices[req.device_id].label,
       readings: readings,
+      calendar: calendar,
       sensors: sensors
     });
   });
-
 });
 
 router.get('/:device_id/data.:format?', function (req, res) {

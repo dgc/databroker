@@ -5,11 +5,30 @@ block content
 
   h2 Readings
 
-  each group, set in readings
-    h3= set
-    each day in group
-      a(href=day[0]) #{day[1].substring(8, 10)}
-      span= " "
+  table.calendar
+    tr
+      th Mon
+      th Tue
+      th Wed
+      th Thu
+      th Fri
+      th Sat
+      th Sun
+
+    each week in calendar
+      tr
+        each dow in [0, 1, 2, 3, 4, 5, 6]
+          if week[1][dow]
+            td(class=dow > 4 ? "weekend" : "")
+              div.label= week[1][dow].label
+              if week[1][dow].csv
+                div.csv
+                  a(href=week[1][dow].csv) CSV
+              if week[1][dow].xlsx
+                div.xlsx
+                  a(href=week[1][dow].xlsx) Excel
+          else
+            td(class=dow > 4 ? "weekend empty" : "empty")
 
   h2 Sensors
 

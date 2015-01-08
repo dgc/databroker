@@ -22,3 +22,21 @@ ol.breadcrumbs li {
 ol.breadcrumbs li + li:before {
     content: " > ";
 }
+
+table.calendar {
+  border-collapse: collapse;
+}
+
+table.calendar td {
+  border: 1px solid GRAY;
+  padding: 3px;
+  width: 60px;
+}
+
+table.calendar td.empty {
+/*  background: #e0e0e0; */
+}
+
+table.calendar td.weekend {
+  background: #e0e0e0;
+}
