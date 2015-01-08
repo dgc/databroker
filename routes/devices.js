@@ -107,7 +107,16 @@ router.get('/:device_id', function(req, res) {
       _.each(days, function(day) {
         week[day.dow] = day;
       });
-      return [sow, week];
+      return [sow, week, false];
+    });
+
+    _.each(calendar, function(week, i) {
+      if (i > 0) {
+        var diff = moment(calendar[i][0]) - moment(calendar[i - 1][0]);
+
+        if (diff != 7 * 24 * 60 * 60 * 1000)
+          week[2] = true;
+      }
     });
 
     res.render('device', {

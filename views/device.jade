@@ -6,6 +6,7 @@ block content
   h2 Readings
 
   table.calendar
+
     tr
       th Mon
       th Tue
@@ -16,6 +17,16 @@ block content
       th Sun
 
     each week in calendar
+      if week[2]
+        tr
+          td(class="break")
+          td(class="break")
+          td(class="break")
+          td(class="break")
+          td(class="break")
+          td(class="weekend_break")
+          td(class="weekend_break")
+
       tr
         each dow in [0, 1, 2, 3, 4, 5, 6]
           if week[1][dow]

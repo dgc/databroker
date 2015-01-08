@@ -40,3 +40,13 @@ table.calendar td.empty {
 table.calendar td.weekend {
   background: #e0e0e0;
 }
+
+table.calendar td.break {
+  border: 1px dashed #cccccc;
+  height: 16px;
+}
+
+table.calendar td.weekend_break {
+  border: 1px dashed #cccccc;
+  background: #f0f0f0;
+}
