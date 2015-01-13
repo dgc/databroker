@@ -301,7 +301,7 @@ router.get('/:device_id/data.:format?', function (req, res) {
 
               var dim_el = doc.find('/ss:worksheet/ss:dimension', ns)[0];
 
-              // Set the overall worksheet dimesion
+              // Set the overall worksheet dimension
               dim_el.attr('ref').value('A1:K' + (data.length + 1));
 
               var sheet_data = doc.find('/ss:worksheet/ss:sheetData', ns)[0];
@@ -319,9 +319,9 @@ router.get('/:device_id/data.:format?', function (req, res) {
                 .node('c').attr({ r: "J1", s: "1", t: "s" }).node('v', '6').parent().parent()
                 .node('c').attr({ r: "K1", s: "1", t: "s" }).node('v', '7').parent().parent()
 
+              var row = 2;
+
               _.each(data, function(row_data, index) {
- 
-                var row = index + 2;
  
                 sheet_data.node("row").attr({ r: row, spans: '1:11' })
                   .node('c').attr({ r: 'A' + row }).node('v', row_data['timestamp'] + "").parent().parent()
@@ -334,6 +334,15 @@ router.get('/:device_id/data.:format?', function (req, res) {
                   .node('c').attr({ r: 'I' + row }).node('f', 'C' + row + '/1000').parent().node('v', (row_data['10-000802b44f21'] / 1000) + "").parent().parent()
                   .node('c').attr({ r: 'J' + row }).node('f', 'D' + row + '/1000').parent().node('v', (row_data['10-000802b49201'] / 1000) + "").parent().parent()
                   .node('c').attr({ r: 'K' + row }).node('f', 'E' + row + '/1000').parent().node('v', (row_data['10-000802b4b181'] / 1000) + "").parent().parent()
+
+                row = row + 1;
+
+                // Insert blank lines when the timestamp gap is too big.
+                if (index < (data.length - 2)) {
+                  if ((data[index + 1]["timestamp"] - data[index]["timestamp"]) > 120) {
+                    row = row + 1;
+                  }
+                }
               });
 
               content = doc.toString();
