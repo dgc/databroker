@@ -217,9 +217,15 @@ router.get('/:device_id/data.:format?', function (req, res) {
       switch (req.params.format) {
 
         case "csv":
+        case "tsv":
 
-          res.attachment(download_name + '.csv');
-          res.header("Content-Type", "text/csv");
+          if (req.params.format == 'csv') {
+            res.attachment(download_name + '.csv');
+            res.header("Content-Type", "text/csv");
+          } else {
+            res.attachment(download_name + '.tsv');
+            res.header("Content-Type", "text/tab-separated-values");
+          }
 
           column_headers = columns;
 
@@ -236,6 +242,9 @@ router.get('/:device_id/data.:format?', function (req, res) {
           }
 
           var csv_opts = { columns: column_headers, header: true };
+
+          if (req.params.format == 'tsv')
+            csv_opts["delimiter"] = "\t";
 
           data = _.map(data, function(row_data, row_index) {
             return _.map(columns, function(column) {

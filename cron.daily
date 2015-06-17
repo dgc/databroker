@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+DATE=$(/usr/bin/date --date yesterday '+%Y-%m-%d')
+
+/home/dgc/databroker/update_thumbnail.js --date $DATE --device rPI_46_1047_1
+
