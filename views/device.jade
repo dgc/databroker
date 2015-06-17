@@ -32,18 +32,24 @@ block content
           if week[1][dow]
             td(class=dow > 4 ? "weekend" : "")
               div.label= week[1][dow].label
-              if week[1][dow].csv
-                div.csv
-                  a(href=week[1][dow].csv) CSV
-              if week[1][dow].xlsx
-                div.xlsx
-                  a(href=week[1][dow].xlsx) Excel
+              if week[1][dow].thumbnail
+                img(width=125 height=75 src=week[1][dow].thumbnail)
+              else
+                div.no_data
+              div.download
+                if week[1][dow].csv
+                  span.csv
+                    a(href=week[1][dow].csv) CSV
+                span= ' '
+                if week[1][dow].xlsx
+                  span.xlsx
+                    a(href=week[1][dow].xlsx) Excel
           else
             td(class=dow > 4 ? "weekend empty" : "empty")
 
-  h2 Sensors
-
-  ul
-    each sensor in sensors
-      li
-        a(href=sensor[0]) #{sensor[1]}
+// h2 Sensors
+//
+// ul
+//   each sensor in sensors
+//     li
+//       a(href=sensor[0]) #{sensor[1]}

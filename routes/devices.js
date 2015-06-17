@@ -13,8 +13,10 @@ var fs = require('fs');
 var archiver = require('archiver');
 var libxmljs = require("libxmljs");
 var moment = require('moment');
+var async = require('async');
 
-var redis_client = redis.createClient();
+//var redis_client = redis.createClient();
+var redis_client = redis.createClient(null, null, { return_buffers: true });
 
 router.param('device_id', parameters.findDevice);
 
@@ -41,8 +43,13 @@ function get_log_days(device_id, result_func) {
   var key_pattern = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] " + device_id;
 
   redis_client.keys(key_pattern, function (err, keys) {
+    keys = _.map(keys, function(key) { return key.toString('utf-8'); });
     result_func(err, keys)
   });
+}
+
+function key_exists(key, callback) {
+  redis_client.exists(key, callback);
 }
 
 function dateToExcelDate(date) {
@@ -60,82 +67,101 @@ router.get('/:device_id', function(req, res) {
 
   get_log_days(req.device_id, function (err, days) {
 
-    readings = _.map(days.sort(), function(day) {
-      return ["/devices/" + device_id + "/data.csv?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10), day.substring(0, 10)];
+    var thumbnail_keys = _.map(days, function(day) {
+      return "thumbnail " + day;
     });
 
-    var readings = _.groupBy(readings, function(day) {
-      return day[1].substring(0, 7);
-    });
+    async.map(thumbnail_keys, key_exists, function(err, thumbnail_exists) {
 
-    days = _.map(days, function(day) {
+      var thumbnails = {};
 
-      var date = moment(day.substring(0, 10));
-
-      // Day adjustment, starting from Sunday to get to Monday.
-      var day_adjust = [-6, 0, -1, -2, -3, -4, -5];
-
-      var days_since_sunday = date.day();
-      var days_since_monday = (days_since_sunday + 6) % 7;
-      var start_of_week = date.clone().add(day_adjust[days_since_sunday], 'days');
-      var label = date.format("DD MMM");
-
-      var csv_url = "/devices/" + device_id + "/data.csv?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10);
-
-      var xlsx_url;
-      
-      if (device_id == "rPI_46_1047_1")
-        xlsx_url = "/devices/" + device_id + "/data.xlsx?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10);
-
-      return {
-        key: day,
-        date: date,
-        monday: start_of_week,
-        label: label,
-        dow: days_since_monday,
-        csv: csv_url,
-        xlsx: xlsx_url
-      };
-    })
-
-    var calendar = _.groupBy(days, function(day) {
-      return day.monday;
-    });
-
-    calendar = _.map(calendar, function(days, sow) {
-      week = [];
-      _.each(days, function(day) {
-        week[day.dow] = day;
+      _.each(days, function(day, index) {
+        if (thumbnail_exists[index] == 1) {
+          thumbnails[day] = '/devices/' + device_id + '/thumbnails/' + day.substring(0, 10) + '.png';
+        }
       });
-      return [sow, week, false];
-    });
 
-    _.each(calendar, function(week, i) {
-      if (i > 0) {
-        var diff = moment(calendar[i][0]) - moment(calendar[i - 1][0]);
+      readings = _.map(days.sort(), function(day) {
+        return ["/devices/" + device_id + "/data.csv?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10), day.substring(0, 10)];
+      });
 
-        if (diff != 7 * 24 * 60 * 60 * 1000)
-          week[2] = true;
-      }
-    });
+      var readings = _.groupBy(readings, function(day) {
+        return day[1].substring(0, 7);
+      });
 
-    res.render('device', {
-      breadcrumbs: [
-        { label: 'Home', uri: '/' },
-        { label: 'Devices', uri: '/devices' },
-        { label: configuration.devices[device_id].label }
-      ],
-      device_label: configuration.devices[req.device_id].label,
-      readings: readings,
-      calendar: calendar,
-      sensors: sensors
+      days = _.map(days, function(day) {
+
+        var date = moment(day.substring(0, 10));
+        var date_string = day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10);
+
+        // Day adjustment, starting from Sunday to get to Monday.
+        var day_adjust = [-6, 0, -1, -2, -3, -4, -5];
+
+        var days_since_sunday = date.day();
+        var days_since_monday = (days_since_sunday + 6) % 7;
+        var start_of_week = date.clone().add(day_adjust[days_since_sunday], 'days');
+        var label = date.format("DD MMM");
+
+        var csv_url = "/devices/" + device_id + "/data.csv?day=" + date_string;
+
+        var xlsx_url;
+        
+        if (device_id == "rPI_46_1047_1")
+          xlsx_url = "/devices/" + device_id + "/data.xlsx?day=" + date_string;
+
+        var day_metadata = {
+          key: day,
+          thumbnail: thumbnails[day],
+          date: date,
+          monday: start_of_week,
+          label: label,
+          dow: days_since_monday,
+          csv: csv_url,
+          xlsx: xlsx_url
+        };
+
+        return day_metadata;
+      })
+
+      var calendar = _.groupBy(days, function(day) {
+        return day.monday;
+      });
+
+      calendar = _.map(calendar, function(days, sow) {
+        week = [];
+        _.each(days, function(day) {
+          week[day.dow] = day;
+        });
+        return [sow, week, false];
+      });
+
+      _.each(calendar, function(week, i) {
+        if (i > 0) {
+          var diff = moment(calendar[i][0]) - moment(calendar[i - 1][0]);
+
+          if (diff > (((7 * 24) + 1) * 60 * 60 * 1000))
+            week[2] = true;
+        }
+      });
+
+      res.render('device', {
+        breadcrumbs: [
+          { label: 'Home', uri: '/' },
+          { label: 'Devices', uri: '/devices' },
+          { label: configuration.devices[device_id].label }
+        ],
+        device_label: configuration.devices[req.device_id].label,
+        readings: readings,
+        calendar: calendar,
+        sensors: sensors
+      });
     });
   });
 });
 
 router.get('/:device_id/data.:format?', function (req, res) {
   
-  function convert_data(value, column, configuration) {
+  function convert_data(value, column, elapsed, configuration) {
     if (configuration[column]) {
       switch (configuration[column].sensor_model) {
       case "rht03":
@@ -144,6 +170,8 @@ router.get('/:device_id/data.:format?', function (req, res) {
         return parseInt(value) / 1024.0 * 5.0;
       case "FIXME":
         return parseInt(value) / 1024.0 * 5.0 * 100.0;
+      case "YF-S201":
+        return parseInt(value) / (60 * 7.5);
       default:
         return value;
       }
@@ -184,10 +212,13 @@ router.get('/:device_id/data.:format?', function (req, res) {
 
       res.status(200)
 
+      var download_name = req.query['day'] + '_' + req.device_id;
+
       switch (req.params.format) {
 
         case "csv":
 
+          res.attachment(download_name + '.csv');
           res.header("Content-Type", "text/csv");
 
           column_headers = columns;
@@ -206,12 +237,26 @@ router.get('/:device_id/data.:format?', function (req, res) {
 
           var csv_opts = { columns: column_headers, header: true };
 
-          data = _.map(data, function(row_data) {
+          data = _.map(data, function(row_data, row_index) {
             return _.map(columns, function(column) {
               var cell = row_data[column];
 
-              if (req.query["raw"] != "true")
-                cell = convert_data(cell, column, sensor_configuration);
+              if (req.query["raw"] != "true") {
+
+                var elapsed = undefined;
+
+                if (row_data["timestamp"] != undefined) {
+                  if (data.length > 1) {
+                    if (row_index == 0) {
+                      elapsed = data[1]["timestamp"] - data[0]["timestamp"];
+                    } else {
+                      elapsed = data[row_index]["timestamp"] - data[row_index - 1]["timestamp"];
+                    }
+                  }
+                }
+
+                cell = convert_data(cell, column, elapsed, sensor_configuration);
+              }
 
               return cell;
             });
@@ -230,7 +275,8 @@ router.get('/:device_id/data.:format?', function (req, res) {
         break;
 
         case "xlsx":
-          res.attachment('test.xlsx');
+
+          res.attachment(download_name + '.xlsx');
           res.header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
           var archive = archiver('zip');
@@ -357,6 +403,29 @@ router.get('/:device_id/data.:format?', function (req, res) {
 
       }
     });
+  });
+});
+
+router.get('/:device_id/thumbnails/:date.png', function (req, res) {
+  var parsed_date = req.params.date.match(/^\d\d\d\d-\d\d-\d\d/)
+
+  if (parsed_date === null) {
+    res.send(404);
+    return;
+  }
+
+  var key = "thumbnail " + parsed_date[0] + " " + req.device_id;
+
+  redis_client.get(key, function(err, data) {
+
+    if (data === null) {
+      res.send(404);
+      return;
+    }
+
+    res.header("Content-Type", "image/png");
+    res.write(data, 'binary');
+    res.end();
   });
 });
 

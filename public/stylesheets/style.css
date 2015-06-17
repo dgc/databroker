@@ -28,7 +28,7 @@ table.calendar {
 }
 
 table.calendar td {
-  border: 1px solid GRAY;
+  border: 1px solid #ccc;
   padding: 3px;
   width: 60px;
 }
@@ -38,7 +38,7 @@ table.calendar td.empty {
 }
 
 table.calendar td.weekend {
-  background: #e0e0e0;
+/*  background: #e0e0e0; */
 }
 
 table.calendar td.break {
@@ -49,4 +49,19 @@ table.calendar td.break {
 table.calendar td.weekend_break {
   border: 1px dashed #cccccc;
   background: #f0f0f0;
+}
+
+table.calendar div.label {
+  font-size: 24px;
+  color: #666666;
+}
+
+table.calendar div.download {
+  text-align: right;
+  font-size: 10px;
+}
+
+div.no_data {
+  width: 125px;
+  height: 75px;
 }
