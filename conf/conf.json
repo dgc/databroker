@@ -9,6 +9,14 @@
       }
     },
 
+    "power_30_1069_1": {
+
+      "label": "Power meters in 30:1069",
+
+      "sensors": {
+      }
+    },
+
     "rPI_46_1047_1": {
 
       "label": "Temperature sensors in 46:1047",
