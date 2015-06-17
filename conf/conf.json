@@ -1,9 +1,17 @@
 {
   "devices": {
 
+    "power_30_4007_1": {
+
+      "label": "Power meters in 30:4007",
+
+      "sensors": {
+      }
+    },
+
     "rPI_46_1047_1": {
 
-      "label": "Raspberry PI in 46:1047",
+      "label": "Temperature sensors in 46:1047",
 
       "sensors": {
 
@@ -14,9 +22,20 @@
       }
     },
 
+    "Arduino_46_1047_1": {
+
+      "label": "Chiller flow rate sensors in 46:1047",
+
+      "sensors": {
+
+        "D2": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" },
+        "D3": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" }
+      }
+    },
+
     "Arduino_30_1081_1": {
 
-      "label": "Arduino in 30:1081",
+      "label": "Temperature and MIRA output level in 30:1081",
 
       "sensors": {
 
