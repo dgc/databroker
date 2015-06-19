@@ -58,7 +58,7 @@ redis_client.get(options['date'] + ' ' + options['device'], function (err, data)
 
   fs.writeFileSync('data.tsv', tsv);
 
-  exec('gnuplot graphs/' + options['device'] + '.gnu', function (error, stdout, stderr) {
+  exec('gnuplot graphs/' + options['device'] + '_thumbnail.gnu', function (error, stdout, stderr) {
 
     var image = fs.readFileSync('output.png');
 
