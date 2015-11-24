@@ -6,6 +6,11 @@
       "label": "Power meters in 30:4007",
 
       "sensors": {
+        "sensor_1": { "label": "Power Meter 1", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
+        "sensor_2": { "label": "Power Meter 2", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
+        "sensor_3": { "label": "Power Meter 3", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "3", "units_label": "Watts" },
+        "sensor_4": { "label": "Power Meter 4", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "4", "units_label": "Watts" },
+        "sensor_5": { "label": "Power Meter 5", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "5", "units_label": "Watts" }
       }
     },
 
@@ -14,6 +19,19 @@
       "label": "Power meters in 30:1069",
 
       "sensors": {
+        "C1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
+        "C2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" }
+      }
+    },
+
+    "rPI_30_1071_1": {
+
+      "label": "Raspberry Pi in 30:1071",
+
+      "sensors": {
+        "C1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
+        "C2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
+        "C9": { "label": "Oven in 30:1013",        "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "9", "units_label": "Watts" }
       }
     },
 
@@ -23,10 +41,17 @@
 
       "sensors": {
 
-        "10-000802b42b40": { "label": "Adam's Box", "type": "temperature", "sensor_model": "rht03", "units_label": "Celcius" },
-        "10-000802b44f21": { "label": "Pete's Box", "type": "temperature", "sensor_model": "rht03", "units_label": "Celcius" },
-        "10-000802b49201": { "label": "Ed's Box",   "type": "temperature", "sensor_model": "rht03", "units_label": "Celcius" },
-        "10-000802b4b181": { "label": "Laser",      "type": "temperature", "sensor_model": "rht03", "units_label": "Celcius" }
+        "10-000802b42b40": { "label": "Adam's Box?",  "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "10-000802b44f21": { "label": "Pete's Box",   "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "10-000802b49201": { "label": "Ed's Box",     "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "10-000802b4b181": { "label": "Tsunami",      "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "28-00000720f6e6": { "label": "Aircon Left",  "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007213db1": { "label": "Adam's Box",   "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007217131": { "label": "Spitfire",     "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-0000072191f9": { "label": "Aircon Right", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007474609": { "label": "Table Bottom", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007491929": { "label": "Table Top",    "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" }
+
       }
     },
 
