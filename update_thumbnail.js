@@ -9,6 +9,7 @@ var fs = require('fs');
 var dateFormat = require('dateformat');
 var _ = require('underscore');
 var exec = require('child_process').exec;
+var async = require('async');
 
 var switches = [
   ['--date YYYY-MM-DD', 'The date of the image'],
@@ -39,47 +40,62 @@ parser.parse(process.argv);
 if (options['device'] == undefined)
   throw "No device ID.";
 
-redis_client.get(options['date'] + ' ' + options['device'], function (err, data) {
+function updateThumbnail(device, date, callback) {
 
-  var tsv = "";
+  redis_client.get(date + ' ' + device, function (err, data) {
 
-  _.each(JSON.parse(data), function (row) {
+    var tsv = "";
 
-    var timestamp = new Date(row['timestamp'] * 1000);
-    var date = dateFormat(timestamp, 'yyyy/mm/dd HH:MM:ss');
+    _.each(JSON.parse(data), function (row) {
 
-    tsv += date + "\t" + 
-      (row['10-000802b42b40'] / 1000) + "\t" +
-      (row['10-000802b44f21'] / 1000) + "\t" +
-      (row['10-000802b49201'] / 1000) + "\t" +
-      (row['10-000802b4b181'] / 1000) + "\t" +
-      (row['28-00000720f6e6'] / 1000) + "\t" +
-      (row['28-000007213db1'] / 1000) + "\t" +
-      (row['28-000007217131'] / 1000) + "\t" +
-      (row['28-0000072191f9'] / 1000) + "\t" +
-      (row['28-000007474609'] / 1000) + "\t" +
-      (row['28-000007491929'] / 1000) + "\t" +
-      "\n";
-  });
+      var timestamp = new Date(row['timestamp'] * 1000);
+      var date = dateFormat(timestamp, 'yyyy/mm/dd HH:MM:ss');
 
-  fs.writeFileSync('data.tsv', tsv);
+      tsv += date + "\t" + 
+        (row['10-000802b42b40'] / 1000) + "\t" +
+        (row['10-000802b44f21'] / 1000) + "\t" +
+        (row['10-000802b49201'] / 1000) + "\t" +
+        (row['10-000802b4b181'] / 1000) + "\t" +
+        (row['28-00000720f6e6'] / 1000) + "\t" +
+        (row['28-000007213db1'] / 1000) + "\t" +
+        (row['28-000007217131'] / 1000) + "\t" +
+        (row['28-0000072191f9'] / 1000) + "\t" +
+        (row['28-000007474609'] / 1000) + "\t" +
+        (row['28-000007491929'] / 1000) + "\t" +
+        "\n";
+    });
 
-  exec('gnuplot graphs/' + options['device'] + '_thumbnail.gnu', function (error, stdout, stderr) {
+    fs.writeFileSync('data.tsv', tsv);
 
-    var image = fs.readFileSync('output.png');
-
-    var key = 'thumbnail ' + options['date'] + ' ' + options['device'];
-
-    redis_client.set(key, image);
-
-    exec('gnuplot graphs/' + options['device'] + '_image.gnu', function (error, stdout, stderr) {
+    exec('gnuplot graphs/' + device + '_thumbnail.gnu', function (error, stdout, stderr) {
 
       var image = fs.readFileSync('output.png');
 
-      var key = 'image ' + options['date'] + ' ' + options['device'];
+      var key = 'thumbnail ' + date + ' ' + device;
 
       redis_client.set(key, image);
-      process.exit(0);
+
+      exec('gnuplot graphs/' + device + '_image.gnu', function (error, stdout, stderr) {
+
+        var image = fs.readFileSync('output.png');
+
+        var key = 'image ' + date + ' ' + device;
+
+        redis_client.set(key, image);
+        callback();
+      });
     });
+  });
+}
+
+var pattern = options['date'] + ' ' + options['device'];
+
+redis_client.keys(pattern, function (err, thumbnail_keys) {
+  async.series(_.map(thumbnail_keys, function(key) {
+    return function(callback) {
+      updateThumbnail(options['device'], key.toString('utf-8').substring(0, 10), callback);
+    }
+  }), function(err, results) {
+    process.exit(0);
   });
 });
