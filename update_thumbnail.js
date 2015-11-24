@@ -53,6 +53,12 @@ redis_client.get(options['date'] + ' ' + options['device'], function (err, data)
       (row['10-000802b44f21'] / 1000) + "\t" +
       (row['10-000802b49201'] / 1000) + "\t" +
       (row['10-000802b4b181'] / 1000) + "\t" +
+      (row['28-00000720f6e6'] / 1000) + "\t" +
+      (row['28-000007213db1'] / 1000) + "\t" +
+      (row['28-000007217131'] / 1000) + "\t" +
+      (row['28-0000072191f9'] / 1000) + "\t" +
+      (row['28-000007474609'] / 1000) + "\t" +
+      (row['28-000007491929'] / 1000) + "\t" +
       "\n";
   });
 
@@ -65,6 +71,15 @@ redis_client.get(options['date'] + ' ' + options['device'], function (err, data)
     var key = 'thumbnail ' + options['date'] + ' ' + options['device'];
 
     redis_client.set(key, image);
-    process.exit(0);
+
+    exec('gnuplot graphs/' + options['device'] + '_image.gnu', function (error, stdout, stderr) {
+
+      var image = fs.readFileSync('output.png');
+
+      var key = 'image ' + options['date'] + ' ' + options['device'];
+
+      redis_client.set(key, image);
+      process.exit(0);
+    });
   });
 });
