@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= device_label
+
+  h2 Day view
+
+  a(href=dateformat(prev_day, "yyyy-mm-dd"))= dateformat(prev_day, "dddd")
+  br
+  a(href=dateformat(next_day, "yyyy-mm-dd"))= dateformat(next_day, "dddd")
+  br
+
+  if image_uri
+    img(src=image_uri)

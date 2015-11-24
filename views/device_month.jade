@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  h1= device_label
+
+  h2= dateformat(date, "mmmm yyyy")
+
+  a(href="#{('000' + prev_month_year).slice(-4)}-#{('0' + prev_month_month).slice(-2)}") prev
+  br
+  a(href="#{('000' + next_month_year).slice(-4)}-#{('0' + next_month_month).slice(-2)}") next
+  br
+
+  table
+    each row in calendar
+      tr
+        each day in row
+          if day == 0
+            td
+          else
+            td
+              if thumbnails[dateformat(date, "yyyy-mm-") + ('0' + day).slice(-2)]
+                a(href="#{('000' + year).slice(-4)}-#{('0' + month).slice(-2)}-#{('0' + day).slice(-2)}")
+                  img(width=125 height=75 src=thumbnails[dateformat(date, "yyyy-mm-") + ('0' + day).slice(-2)])
+              else
+                div.no_data
