@@ -14,6 +14,7 @@ var archiver = require('archiver');
 var libxmljs = require("libxmljs");
 var moment = require('moment');
 var async = require('async');
+var calendar = require('calendar');
 
 //var redis_client = redis.createClient();
 var redis_client = redis.createClient(null, null, { return_buffers: true });
@@ -159,12 +160,123 @@ router.get('/:device_id', function(req, res) {
   });
 });
 
+// Month view
+
+router.get('/:device_id/calendar/:date(\\d{4}-\\d{2})', function(req, res) {
+
+  var device_id = req.device_id;
+
+  var yearString  = req.params.date.substring(0, 4);
+  var monthString = req.params.date.substring(5, 7);
+
+  var year  = parseInt(yearString);
+  var month = parseInt(monthString);
+
+  var date = new Date(yearString + "-" + monthString + "-01");
+
+  var cal = new calendar.Calendar(1).monthDays(year, month - 1);
+
+  var nextMonthYear  = year;
+  var nextMonthMonth = month + 1;
+  var prevMonthYear  = year;
+  var prevMonthMonth = month - 1;
+
+  if (month == 1) {
+    prevMonthYear  = year - 1;
+    prevMonthMonth = 12;
+  } else if (month == 12) {
+    nextMonthYear  = year + 1;
+    nextMonthMonth = 1;
+  }
+
+  var key_pattern = "thumbnail " + yearString + "-" + monthString + "-[0-9][0-9] " + device_id;
+
+  redis_client.keys(key_pattern, function (err, thumbnail_keys) {
+
+    thumbnails = {}
+
+    _.each(thumbnail_keys, function(key) {
+      var thumbnail_date = key.toString('utf-8').substring(10, 20);
+      thumbnails[thumbnail_date] = '/devices/' + device_id + '/thumbnails/' + thumbnail_date + '.png';
+    });
+
+    res.render('device_month', {
+      breadcrumbs: [
+        { label: 'Home', uri: '/' },
+        { label: 'Devices', uri: '/devices' },
+        { label: configuration.devices[device_id].label, uri: '/devices/' + device_id },
+        { label: dateformat(date, "mmmm yyyy") }
+      ],
+      device_id: device_id,
+      device_label: configuration.devices[req.device_id].label,
+      year: year,
+      month: month,
+      calendar: cal,
+      date: date,
+      dateformat: dateformat,
+      thumbnails: thumbnails,
+      next_month_year: nextMonthYear,
+      next_month_month: nextMonthMonth,
+      prev_month_year: prevMonthYear,
+      prev_month_month: prevMonthMonth
+    });
+  });
+});
+
+// Day view
+
+router.get('/:device_id/calendar/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
+
+  var device_id = req.device_id;
+
+  var year  = req.params.date.substring(0, 4);
+  var month = req.params.date.substring(5, 7);
+  var day   = req.params.date.substring(8, 10);
+
+  var image_key = "image " + year + "-" + month + "-" + day + " " + device_id;
+  var image_uri = "/devices/" + device_id + "/images/" + year + "-" + month + "-" + day + ".png";
+
+  var date = new Date(year + "-" + month + "-" + day);
+
+  var nextDay = new Date();
+  var prevDay = new Date();
+
+  prevDay.setDate(date.getDate() - 1);
+  nextDay.setDate(date.getDate() + 1);
+
+  redis_client.exists(image_key, function (err, image_exists) {
+    res.render('device_day', {
+      breadcrumbs: [
+        { label: 'Home', uri: '/' },
+        { label: 'Devices', uri: '/devices' },
+        { label: configuration.devices[device_id].label, uri: '/devices/' + device_id },
+        { label: dateformat(date, "mmmm yyyy"), uri: year + "-" + month },
+        { label: dateformat(date, "d") }
+      ],
+      device_label: configuration.devices[req.device_id].label,
+      year: year,
+      month: month,
+      day: day,
+      dateformat: dateformat,
+      next_day: nextDay,
+      prev_day: prevDay,
+      image_uri: image_exists ? image_uri : undefined
+    });
+  });
+});
+
 router.get('/:device_id/data.:format?', function (req, res) {
   
   function convert_data(value, column, elapsed, configuration) {
     if (configuration[column]) {
+
+      if (value == undefined)
+        return value;
+
       switch (configuration[column].sensor_model) {
-      case "rht03":
+      case "RHT03":
+        return parseInt(value) / 1000.0;
+      case "DS18B20":
         return parseInt(value) / 1000.0;
       case "Voltage":
         return parseInt(value) / 1024.0 * 5.0;
@@ -178,6 +290,27 @@ router.get('/:device_id/data.:format?', function (req, res) {
     } else {
       var date = new Date(parseInt(value) * 1000);
       return dateformat(date, "yyyy/mm/dd HH:MM:ss");
+    }
+  }
+
+  function get_data(data, column, configuration) {
+    try {
+      if (configuration[column]) {
+        if (configuration[column].sensor_model == 'CurrentCostTIAM') {
+          var doc = libxmljs.parseXml(data.message);
+          var el = doc.get('/msg/sensor');
+          var sensor_number = el.text();
+
+          if (sensor_number != configuration[column].sensor)
+            return undefined;
+
+          return el = doc.get('/msg/ch1/watts').text();
+        }
+      }
+      return data[column];
+    }
+    catch(err) {
+      // Do nothing on error - will result in blank entry
     }
   }
 
@@ -248,7 +381,8 @@ router.get('/:device_id/data.:format?', function (req, res) {
 
           data = _.map(data, function(row_data, row_index) {
             return _.map(columns, function(column) {
-              var cell = row_data[column];
+
+              var cell = get_data(row_data, column, sensor_configuration);
 
               if (req.query["raw"] != "true") {
 
@@ -419,7 +553,7 @@ router.get('/:device_id/thumbnails/:date.png', function (req, res) {
   var parsed_date = req.params.date.match(/^\d\d\d\d-\d\d-\d\d/)
 
   if (parsed_date === null) {
-    res.send(404);
+    res.status(404).end();
     return;
   }
 
@@ -428,7 +562,30 @@ router.get('/:device_id/thumbnails/:date.png', function (req, res) {
   redis_client.get(key, function(err, data) {
 
     if (data === null) {
-      res.send(404);
+      res.status(404).end();
+      return;
+    }
+
+    res.header("Content-Type", "image/png");
+    res.write(data, 'binary');
+    res.end();
+  });
+});
+
+router.get('/:device_id/images/:date.png', function (req, res) {
+  var parsed_date = req.params.date.match(/^\d\d\d\d-\d\d-\d\d/)
+
+  if (parsed_date === null) {
+    res.status(404).end();
+    return;
+  }
+
+  var key = "image " + parsed_date[0] + " " + req.device_id;
+
+  redis_client.get(key, function(err, data) {
+
+    if (data === null) {
+      res.status(404).end();
       return;
     }
 
