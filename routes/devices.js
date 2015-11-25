@@ -172,21 +172,33 @@ router.get('/:device_id/calendar/:date(\\d{4}-\\d{2})', function(req, res) {
   var year  = parseInt(yearString);
   var month = parseInt(monthString);
 
-  var date = new Date(yearString + "-" + monthString + "-01");
-
   var cal = new calendar.Calendar(1).monthDays(year, month - 1);
 
-  var nextMonthYear  = year;
-  var nextMonthMonth = month + 1;
-  var prevMonthYear  = year;
-  var prevMonthMonth = month - 1;
+  cal = _.map(cal, function(week) {
+    return _.map(week, function(day) {
+      if (day == 0) {
+        return undefined;
+      } else {
+        return new Date(yearString + "-" + monthString + "-" + (('0' + day).slice(-2)));
+      }
+    });
+  });
 
-  if (month == 1) {
-    prevMonthYear  = year - 1;
-    prevMonthMonth = 12;
-  } else if (month == 12) {
-    nextMonthYear  = year + 1;
-    nextMonthMonth = 1;
+  var date      = new Date(yearString + "-" + monthString + "-01");
+  var prevMonth = new Date(yearString + "-" + monthString + "-01");
+  var nextMonth = new Date(yearString + "-" + monthString + "-01");
+
+  if (date.getMonth() == 0) {
+    prevMonth.setMonth(11);
+    prevMonth.setFullYear(date.getFullYear() - 1);
+    nextMonth.setMonth(1);
+  } else if (date.getMonth() == 11) {
+    prevMonth.setMonth(10);
+    nextMonth.setMonth(0);
+    nextMonth.setFullYear(date.getFullYear() + 1);
+  } else {
+    prevMonth.setMonth(date.getMonth() - 1);
+    nextMonth.setMonth(date.getMonth() + 1);
   }
 
   var key_pattern = "thumbnail " + yearString + "-" + monthString + "-[0-9][0-9] " + device_id;
@@ -215,10 +227,8 @@ router.get('/:device_id/calendar/:date(\\d{4}-\\d{2})', function(req, res) {
       date: date,
       dateformat: dateformat,
       thumbnails: thumbnails,
-      next_month_year: nextMonthYear,
-      next_month_month: nextMonthMonth,
-      prev_month_year: prevMonthYear,
-      prev_month_month: prevMonthMonth
+      prev_month: prevMonth,
+      next_month: nextMonth
     });
   });
 });
@@ -257,6 +267,7 @@ router.get('/:device_id/calendar/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
       year: year,
       month: month,
       day: day,
+      date: date,
       dateformat: dateformat,
       next_day: nextDay,
       prev_day: prevDay,
@@ -331,19 +342,16 @@ router.get('/:device_id/data.:format?', function (req, res) {
 
   redis_client.keys(key_pattern, function (err, keys) {
     redis_client.mget(keys, function (err, readings_sets) {
+
+      res.status(200)
+
       var data = [];
 
       _.each(readings_sets, function(readings) {
         data = data.concat(JSON.parse(readings));
       });
 
-      var sensor_configuration = configuration.devices[req.device_id].sensors;
-
-      var columns = ['timestamp'].concat(_.keys(sensor_configuration));
-
       /* Format the data. */
-
-      res.status(200)
 
       var download_name = req.query['day'] + '_' + req.device_id;
 
@@ -359,10 +367,18 @@ router.get('/:device_id/data.:format?', function (req, res) {
             res.attachment(download_name + '.tsv');
             res.header("Content-Type", "text/tab-separated-values");
           }
+// --------------------------------------------------------------------------------------
+
+          var device_id = req.device_id;
+          var raw_mode = req.query["raw"] == "true";
+          var format = req.params.format;
+
+          var sensor_configuration = configuration.devices[device_id].sensors;
+          var columns = ['timestamp'].concat(_.keys(sensor_configuration));
 
           column_headers = columns;
 
-          if (req.query["raw"] != "true") {
+          if (raw_mode == false) {
             column_headers = _.map(columns, function(column) {
               if (sensor_configuration[column]) {
                 return sensor_configuration[column].label;
@@ -376,7 +392,7 @@ router.get('/:device_id/data.:format?', function (req, res) {
 
           var csv_opts = { columns: column_headers, header: true };
 
-          if (req.params.format == 'tsv')
+          if (format == 'tsv')
             csv_opts["delimiter"] = "\t";
 
           data = _.map(data, function(row_data, row_index) {
@@ -384,7 +400,7 @@ router.get('/:device_id/data.:format?', function (req, res) {
 
               var cell = get_data(row_data, column, sensor_configuration);
 
-              if (req.query["raw"] != "true") {
+              if (raw_mode == false) {
 
                 var elapsed = undefined;
 

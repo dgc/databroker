@@ -3,23 +3,41 @@ extends layout
 block content
   h1= device_label
 
-  h2= dateformat(date, "mmmm yyyy")
+  div.nav_prev
+    span.nav_arrow &#9664; 
+    a(href=dateformat(prev_month, "yyyy-mm"))= dateformat(prev_month, "mmmm yyyy")
 
-  a(href="#{('000' + prev_month_year).slice(-4)}-#{('0' + prev_month_month).slice(-2)}") prev
-  br
-  a(href="#{('000' + next_month_year).slice(-4)}-#{('0' + next_month_month).slice(-2)}") next
-  br
+  div.nav_next
+    a(href=dateformat(next_month, "yyyy-mm"))= dateformat(next_month, "mmmm yyyy")
+    span.nav_arrow  &#9654;
 
-  table
+  h2.nav_center= dateformat(date, "mmmm yyyy")
+
+  table.calendar_month
+
+    tr
+      th Mon
+      th Tue
+      th Wed
+      th Thu
+      th Fri
+      th Sat
+      th Sun
+
     each row in calendar
       tr
         each day in row
-          if day == 0
-            td
+          if day == undefined
+            td.invalid
           else
             td
-              if thumbnails[dateformat(date, "yyyy-mm-") + ('0' + day).slice(-2)]
-                a(href="#{('000' + year).slice(-4)}-#{('0' + month).slice(-2)}-#{('0' + day).slice(-2)}")
-                  img(width=125 height=75 src=thumbnails[dateformat(date, "yyyy-mm-") + ('0' + day).slice(-2)])
+              div.label= dateformat(day, "dd")
+              if thumbnails[dateformat(day, "yyyy-mm-dd")]
+                a(href=dateformat(day, 'yyyy-mm-dd'))
+                  img(width=125 height=75 src=thumbnails[dateformat(day, "yyyy-mm-dd")])
               else
                 div.no_data
+              div.download
+                span.csv
+                  a(href="../data.csv?day=#{dateformat(day, 'yyyymmdd')}") CSV
+

@@ -3,12 +3,15 @@ extends layout
 block content
   h1= device_label
 
-  h2 Day view
+  div.nav_prev
+    span.nav_arrow &#9664; 
+    a(href=dateformat(prev_day, "yyyy-mm-dd"))= dateformat(prev_day, "fullDate")
 
-  a(href=dateformat(prev_day, "yyyy-mm-dd"))= dateformat(prev_day, "dddd")
-  br
-  a(href=dateformat(next_day, "yyyy-mm-dd"))= dateformat(next_day, "dddd")
-  br
+  div.nav_next
+    a(href=dateformat(next_day, "yyyy-mm-dd"))= dateformat(next_day, "fullDate")
+    span.nav_arrow  &#9654;
+
+  h2.nav_center= dateformat(date, "fullDate")
 
   if image_uri
     img(src=image_uri)

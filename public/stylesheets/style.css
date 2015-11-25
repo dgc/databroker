@@ -23,45 +23,73 @@ ol.breadcrumbs li + li:before {
     content: " > ";
 }
 
-table.calendar {
+table.calendar_month {
   border-collapse: collapse;
 }
 
-table.calendar td {
+table.calendar_month td {
   border: 1px solid #ccc;
   padding: 3px;
   width: 60px;
 }
 
-table.calendar td.empty {
+table.calendar_month td.empty {
 /*  background: #e0e0e0; */
 }
 
-table.calendar td.weekend {
+table.calendar_month td.weekend {
 /*  background: #e0e0e0; */
 }
 
-table.calendar td.break {
+table.calendar_month td.break {
   border: 1px dashed #cccccc;
   height: 16px;
 }
 
-table.calendar td.weekend_break {
+table.calendar_month td.weekend_break {
   border: 1px dashed #cccccc;
   background: #f0f0f0;
 }
 
-table.calendar div.label {
+table.calendar_month div.label {
   font-size: 24px;
   color: #666666;
 }
 
-table.calendar div.download {
+table.calendar_month div.download {
   text-align: right;
   font-size: 10px;
+}
+
+table.calendar_month td.invalid {
+  background: #eee;
 }
 
 div.no_data {
   width: 125px;
   height: 75px;
+}
+
+div.nav_prev {
+  float: left;
+  vertical-align: middle;
+}
+
+div.nav_next {
+  float: right;
+  vertical-align: middle;
+}
+
+h2.nav_center {
+  text-align: center;
+  vertical-align: middle;
+}
+
+table.calendar_month {
+  clear: both;
+}
+
+span.nav_arrow {
+  font-size: 200%;
+  vertical-align: middle;
 }
