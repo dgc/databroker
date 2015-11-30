@@ -42,28 +42,50 @@ if (options['device'] == undefined)
 
 function updateThumbnail(device, date, callback) {
 
-  redis_client.get(date + ' ' + device, function (err, data) {
+  redis_client.get(date + ' ' + device, function (err, day_data) {
 
-    var tsv = "";
+    var data = new Array(1440);
 
-    _.each(JSON.parse(data), function (row) {
+    _.each(JSON.parse(day_data), function (row) {
 
       var timestamp = new Date(row['timestamp'] * 1000);
       var date = dateFormat(timestamp, 'yyyy/mm/dd HH:MM:ss');
 
-      tsv += date + "\t" + 
-        (row['10-000802b42b40'] / 1000) + "\t" +
-        (row['10-000802b44f21'] / 1000) + "\t" +
-        (row['10-000802b49201'] / 1000) + "\t" +
-        (row['10-000802b4b181'] / 1000) + "\t" +
-        (row['28-00000720f6e6'] / 1000) + "\t" +
-        (row['28-000007213db1'] / 1000) + "\t" +
-        (row['28-000007217131'] / 1000) + "\t" +
-        (row['28-0000072191f9'] / 1000) + "\t" +
-        (row['28-000007474609'] / 1000) + "\t" +
-        (row['28-000007491929'] / 1000) + "\t" +
-        "\n";
+      data[(timestamp.getHours() * 60) + timestamp.getMinutes()] = row;
     });
+
+    var tsv = "";
+    var timestamp = new Date();
+
+    for (var hour = 0; hour < 24; hour++) {
+
+      timestamp.setHours(hour);    
+
+      for (var minute = 0; minute < 60; minute++) {
+
+        timestamp.setMinutes(minute);
+
+        var row_data = data[(hour * 60) + minute];
+
+        var time = dateFormat(timestamp, 'yyyy/mm/dd HH:MM:00');
+
+        if (row_data == undefined)
+          row_data = {};
+
+        tsv += time + "\t" + 
+          (row_data['10-000802b42b40'] / 1000) + "\t" +
+          (row_data['10-000802b44f21'] / 1000) + "\t" +
+          (row_data['10-000802b49201'] / 1000) + "\t" +
+          (row_data['10-000802b4b181'] / 1000) + "\t" +
+          (row_data['28-00000720f6e6'] / 1000) + "\t" +
+          (row_data['28-000007213db1'] / 1000) + "\t" +
+          (row_data['28-000007217131'] / 1000) + "\t" +
+          (row_data['28-0000072191f9'] / 1000) + "\t" +
+          (row_data['28-000007474609'] / 1000) + "\t" +
+          (row_data['28-000007491929'] / 1000) + "\t" +
+          "\n";
+      }
+    }
 
     fs.writeFileSync('data.tsv', tsv);
 
