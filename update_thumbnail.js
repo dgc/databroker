@@ -67,7 +67,7 @@ function updateThumbnail(device, date, callback) {
 
         var row_data = data[(hour * 60) + minute];
 
-        var time = dateFormat(timestamp, 'yyyy/mm/dd HH:MM:00');
+        var time = dateFormat(timestamp, 'HH:MM:00');
 
         if (row_data == undefined)
           row_data = {};
