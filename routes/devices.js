@@ -72,6 +72,12 @@ router.get('/:device_id', function(req, res) {
       return "thumbnail " + day;
     });
 
+    var most_recent_month;
+    
+    if (days.length > 0) {
+      most_recent_month = days.sort()[days.length - 1].substring(0, 7);
+    }
+
     async.map(thumbnail_keys, key_exists, function(err, thumbnail_exists) {
 
       var thumbnails = {};
@@ -154,7 +160,9 @@ router.get('/:device_id', function(req, res) {
         device_label: configuration.devices[req.device_id].label,
         readings: readings,
         calendar: calendar,
-        sensors: sensors
+        sensors: sensors,
+        device_id: device_id,
+        most_recent_month: most_recent_month
       });
     });
   });
@@ -162,7 +170,7 @@ router.get('/:device_id', function(req, res) {
 
 // Month view
 
-router.get('/:device_id/calendar/:date(\\d{4}-\\d{2})', function(req, res) {
+router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
 
   var device_id = req.device_id;
 
@@ -235,7 +243,7 @@ router.get('/:device_id/calendar/:date(\\d{4}-\\d{2})', function(req, res) {
 
 // Day view
 
-router.get('/:device_id/calendar/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
+router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
 
   var device_id = req.device_id;
 
@@ -248,8 +256,8 @@ router.get('/:device_id/calendar/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
 
   var date = new Date(year + "-" + month + "-" + day);
 
-  var nextDay = new Date();
-  var prevDay = new Date();
+  var nextDay = new Date(date);
+  var prevDay = new Date(date);
 
   prevDay.setDate(date.getDate() - 1);
   nextDay.setDate(date.getDate() + 1);
@@ -263,6 +271,7 @@ router.get('/:device_id/calendar/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
         { label: dateformat(date, "mmmm yyyy"), uri: year + "-" + month },
         { label: dateformat(date, "d") }
       ],
+      device_id: device_id,
       device_label: configuration.devices[req.device_id].label,
       year: year,
       month: month,
@@ -609,6 +618,23 @@ router.get('/:device_id/images/:date.png', function (req, res) {
     res.write(data, 'binary');
     res.end();
   });
+});
+
+router.get('/:device_id/gnuplot/:gnuplot.gnu', function (req, res) {
+
+  var gnuplot = req.params.gnuplot;
+
+  if ((gnuplot == 'image') || (gnuplot == 'thumbnail')) {
+
+    var filename = "graphs/" + req.device_id + "_" + gnuplot + ".gnu";
+    
+    fs.readFile(filename, function (err, data) {
+
+      res.header("Content-Type", "text/plain");
+      res.write(data, 'binary');
+      res.end();
+    });
+  }
 });
 
 module.exports = router;
