@@ -41,7 +41,7 @@
 
       "sensors": {
 
-        "10-000802b42b40": { "label": "Adam's Box?",  "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "10-000802b42b40": { "label": "Hannah's Box", "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
         "10-000802b44f21": { "label": "Pete's Box",   "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
         "10-000802b49201": { "label": "Ed's Box",     "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
         "10-000802b4b181": { "label": "Tsunami",      "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
