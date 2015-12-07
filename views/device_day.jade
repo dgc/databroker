@@ -11,7 +11,42 @@ block content
     a(href=dateformat(next_day, "yyyy-mm-dd"))= dateformat(next_day, "fullDate")
     span.nav_arrow  &#9654;
 
-  h2.nav_center= dateformat(date, "fullDate")
+  div.nav_center= dateformat(date, "fullDate")
 
   if image_uri
-    img(src=image_uri)
+    img(width=1000 height=600 src=image_uri)
+
+  h2 Downloads
+
+  ul
+    li
+      span Raw data (as 
+      a(href="../data.json?day=#{dateformat(date, 'yyyymmdd')}&raw=true") JSON
+      span , 
+      a(href="../data.csv?day=#{dateformat(date, 'yyyymmdd')}&raw=true") CSV
+      span  or 
+      a(href="../data.tsv?day=#{dateformat(date, 'yyyymmdd')}&raw=true") TSV
+      span .)
+    li
+      span Processed data (as 
+      a(href="../data.csv?day=#{dateformat(date, 'yyyymmdd')}") CSV
+      span  or 
+      a(href="../data.tsv?day=#{dateformat(date, 'yyyymmdd')}") TSV
+      span .)
+
+    if image_uri
+      if device_id == 'rPI_46_1047_1'
+        li
+          span The above image (as 
+          a(href="../images/#{dateformat(date, 'yyyy-mm-dd')}.png") PNG
+          span .)
+
+        li
+          span Thumbnail of the above image (as 
+          a(href="../thumbnails/#{dateformat(date, 'yyyy-mm-dd')}.png") PNG
+          span .)
+
+        li
+          span The 
+          a(href="../gnuplot/image.gnu") Gnuplot file
+          span  used to generate the above image.

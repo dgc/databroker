@@ -4,16 +4,17 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    div.outer_page
+      div.page
+        div.header
+          h1.page_title DataBroker
 
-    div.header
-      h1 DataBroker
+          ol.breadcrumbs
+            each breadcrumb in breadcrumbs
+              li
+                if breadcrumb['uri']
+                  a(href=breadcrumb['uri']) #{breadcrumb['label']}
+                else
+                  span #{breadcrumb['label']}
 
-      ol.breadcrumbs
-        each breadcrumb in breadcrumbs
-          li
-            if breadcrumb['uri']
-              a(href=breadcrumb['uri']) #{breadcrumb['label']}
-            else
-              span #{breadcrumb['label']}
-
-    block content
+        block content
