@@ -42,12 +42,21 @@ if (options['device'] == undefined)
 
 function updateThumbnail(device, date, configuration, callback) {
 
-  function process_dallas_temp(raw) {
-    if (raw == undefined) {
-      return "";
-    } else {
-      return raw / 1000;
+  function process_data(raw, sensor) {
+
+    switch (sensor.sensor_model) {
+
+    case "RHT03":
+    case "DS18B20":
+
+      if (raw == undefined) {
+        return "";
+      } else {
+        return raw / 1000;
+      }
     }
+
+    return "";
   }
 
   redis_client.get(date + ' ' + device, function (err, day_data) {
@@ -64,17 +73,17 @@ function updateThumbnail(device, date, configuration, callback) {
 
     var csv = "Time";
 
-    _.each(configuration.devices["rPI_46_1047_1"].sensors, function (details, key) {
+    _.each(configuration.devices[device].sensors, function (details, key) {
       csv = csv + "," + details.label;
     });
 
-    csv += "\n";
+    csv += "\r\n";
 
     var timestamp = new Date();
 
     for (var hour = 0; hour < 24; hour++) {
 
-      timestamp.setHours(hour);    
+      timestamp.setHours(hour);
 
       for (var minute = 0; minute < 60; minute++) {
 
@@ -87,19 +96,13 @@ function updateThumbnail(device, date, configuration, callback) {
         if (row_data == undefined)
           row_data = {};
 
-        if (device == 'rPI_46_1047_1') {
-          csv += time + "," + 
-            process_dallas_temp(row_data['10-000802b42b40']) + "," +
-            process_dallas_temp(row_data['10-000802b44f21']) + "," +
-            process_dallas_temp(row_data['10-000802b49201']) + "," +
-            process_dallas_temp(row_data['10-000802b4b181']) + "," +
-            process_dallas_temp(row_data['28-00000720f6e6']) + "," +
-            process_dallas_temp(row_data['28-000007213db1']) + "," +
-            process_dallas_temp(row_data['28-000007217131']) + "," +
-            process_dallas_temp(row_data['28-0000072191f9']) + "," +
-            process_dallas_temp(row_data['28-000007474609']) + "," +
-            process_dallas_temp(row_data['28-000007491929']) + "\n";
-        }
+        csv += time;
+
+        _.each(_.keys(configuration.devices[device].sensors), function (sensor_id) {
+          csv += "," + process_data(row_data[sensor_id], configuration.devices[device].sensors[sensor_id]);
+        });
+
+        csv += "\r\n";
       }
     }
 
