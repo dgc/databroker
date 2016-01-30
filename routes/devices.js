@@ -128,11 +128,6 @@ router.get('/:device_id', function(req, res) {
   
           var csv_url = "/devices/" + device_id + "/data.csv?day=" + date_string;
   
-          var xlsx_url;
-          
-          if (device_id == "rPI_46_1047_1")
-            xlsx_url = "/devices/" + device_id + "/data.xlsx?day=" + date_string;
-  
           var day_metadata = {
             key: day,
             thumbnail: thumbnails[day],
@@ -140,8 +135,7 @@ router.get('/:device_id', function(req, res) {
             monday: start_of_week,
             label: label,
             dow: days_since_monday,
-            csv: csv_url,
-            xlsx: xlsx_url
+            csv: csv_url
           };
   
           return day_metadata;
@@ -462,134 +456,6 @@ router.get('/:device_id/data.:format?', function (req, res) {
           res.end(JSON.stringify(data));
 
         break;
-
-        case "xlsx":
-
-          res.attachment(download_name + '.xlsx');
-          res.header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-
-          var archive = archiver('zip');
-
-          archive.on('error', function(err) {
-            res.status(500).send({ error: err.message });
-          });
-
-          res.on('close', function() {
-            res.status(200).send('OK').end();
-          });
-
-          var files = [
-            "xl/workbook.xml",
-            "xl/drawings/drawing1.xml",
-            "xl/drawings/_rels/drawing1.xml.rels",
-            "xl/sharedStrings.xml",
-            "xl/_rels/workbook.xml.rels",
-            "xl/worksheets/sheet2.xml",
-            "xl/worksheets/sheet1.xml",
-            "xl/worksheets/_rels/sheet1.xml.rels",
-            "xl/worksheets/_rels/sheet2.xml.rels",
-            "xl/charts/style1.xml",
-            "xl/charts/colors1.xml",
-            "xl/charts/_rels/chart1.xml.rels",
-            "xl/charts/chart1.xml",
-            "xl/printerSettings/printerSettings1.bin",
-            "xl/theme/theme1.xml",
-            "xl/styles.xml",
-            "docProps/app.xml",
-            "docProps/core.xml",
-            "[Content_Types].xml",
-            "_rels/.rels",
-          ];
-
-          archive.pipe(res);
-
-          _.each(files, function(file) {
-            var filename = 'templates/template1/' + file;
-            var content = fs.readFileSync(filename);
-
-            var ns = {
-              c:  'http://schemas.openxmlformats.org/drawingml/2006/chart',
-              a:  'http://schemas.openxmlformats.org/drawingml/2006/main',
-              ss: 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
-            };
-
-            if (file == 'xl/charts/chart1.xml') {
-
-              var doc = libxmljs.parseXml(content.toString());
-
-              var titleElement = doc.get('/c:chartSpace/c:chart/c:title//a:t', ns);
-              titleElement.text('New title');
-
-              _.each(doc.find('/c:chartSpace/c:chart/c:plotArea/c:valAx', ns), function(valAx) {
-                if (valAx.get('c:title//a:t[. = "Time"]', ns)) {
-                  valAx.get('c:scaling/c:min/@val', ns).value(chartStart);
-                  valAx.get('c:scaling/c:max/@val', ns).value(chartEnd);
-                  // console.log(valAx.get('c:scaling/c:min/@val', ns));
-                }
-              });
-
-              content = doc.toString();
-
-            } else if (file == 'xl/worksheets/sheet1.xml') {
-
-              var doc = libxmljs.parseXml(content.toString());
-
-              var dim_el = doc.find('/ss:worksheet/ss:dimension', ns)[0];
-
-              // Set the overall worksheet dimension
-              dim_el.attr('ref').value('A1:K' + (data.length + 1));
-
-              var sheet_data = doc.find('/ss:worksheet/ss:sheetData', ns)[0];
-
-              sheet_data.node("row").attr({ r: 1, s: 1, customFormat: 1, spans: "1:11", ht: "68.25" })
-
-                .node('c').attr({ r: "A1", s: "1", t: "s" }).node('v', '9').parent().parent()
-                .node('c').attr({ r: "B1", s: "1", t: "s" }).node('v', '0').parent().parent()
-                .node('c').attr({ r: "C1", s: "1", t: "s" }).node('v', '1').parent().parent()
-                .node('c').attr({ r: "D1", s: "1", t: "s" }).node('v', '2').parent().parent()
-                .node('c').attr({ r: "E1", s: "1", t: "s" }).node('v', '3').parent().parent()
-                .node('c').attr({ r: "G1", s: "2", t: "s" }).node('v', '8').parent().parent()
-                .node('c').attr({ r: "H1", s: "1", t: "s" }).node('v', '4').parent().parent()
-                .node('c').attr({ r: "I1", s: "1", t: "s" }).node('v', '5').parent().parent()
-                .node('c').attr({ r: "J1", s: "1", t: "s" }).node('v', '6').parent().parent()
-                .node('c').attr({ r: "K1", s: "1", t: "s" }).node('v', '7').parent().parent()
-
-              var row = 2;
-
-              _.each(data, function(row_data, index) {
- 
-                sheet_data.node("row").attr({ r: row, spans: '1:11' })
-                  .node('c').attr({ r: 'A' + row }).node('v', row_data['timestamp'] + "").parent().parent()
-                  .node('c').attr({ r: 'B' + row }).node('v', row_data['10-000802b42b40'] + "").parent().parent()
-                  .node('c').attr({ r: 'C' + row }).node('v', row_data['10-000802b44f21'] + "").parent().parent()
-                  .node('c').attr({ r: 'D' + row }).node('v', row_data['10-000802b49201'] + "").parent().parent()
-                  .node('c').attr({ r: 'E' + row }).node('v', row_data['10-000802b4b181'] + "").parent().parent()
-                  .node('c').attr({ r: 'G' + row, s: 3 }).node('f', 'A' + row + '/(60*60*24)+"1/1/1970"').parent().node('v', (25569 + (row_data['timestamp'] / (60 * 60 * 24))) + "").parent().parent()
-                  .node('c').attr({ r: 'H' + row }).node('f', 'B' + row + '/1000').parent().node('v', (row_data['10-000802b42b40'] / 1000) + "").parent().parent()
-                  .node('c').attr({ r: 'I' + row }).node('f', 'C' + row + '/1000').parent().node('v', (row_data['10-000802b44f21'] / 1000) + "").parent().parent()
-                  .node('c').attr({ r: 'J' + row }).node('f', 'D' + row + '/1000').parent().node('v', (row_data['10-000802b49201'] / 1000) + "").parent().parent()
-                  .node('c').attr({ r: 'K' + row }).node('f', 'E' + row + '/1000').parent().node('v', (row_data['10-000802b4b181'] / 1000) + "").parent().parent()
-
-                row = row + 1;
-
-                // Insert blank lines when the timestamp gap is too big.
-                if (index < (data.length - 2)) {
-                  if ((data[index + 1]["timestamp"] - data[index]["timestamp"]) > 120) {
-                    row = row + 1;
-                  }
-                }
-              });
-
-              content = doc.toString();
-            }
-
-            archive.append(content, { name: file });
-          });
-
-          archive.finalize();
-
-        break;
-
       }
     });
   });
