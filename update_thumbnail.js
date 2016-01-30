@@ -40,7 +40,15 @@ parser.parse(process.argv);
 if (options['device'] == undefined)
   throw "No device ID.";
 
-function updateThumbnail(device, date, callback) {
+function updateThumbnail(device, date, configuration, callback) {
+
+  function process_dallas_temp(raw) {
+    if (raw == undefined) {
+      return "";
+    } else {
+      return raw / 1000;
+    }
+  }
 
   redis_client.get(date + ' ' + device, function (err, day_data) {
 
@@ -54,7 +62,14 @@ function updateThumbnail(device, date, callback) {
       data[(timestamp.getHours() * 60) + timestamp.getMinutes()] = row;
     });
 
-    var tsv = "";
+    var csv = "Time";
+
+    _.each(configuration.devices["rPI_46_1047_1"].sensors, function (details, key) {
+      csv = csv + "," + details.label;
+    });
+
+    csv += "\n";
+
     var timestamp = new Date();
 
     for (var hour = 0; hour < 24; hour++) {
@@ -67,29 +82,28 @@ function updateThumbnail(device, date, callback) {
 
         var row_data = data[(hour * 60) + minute];
 
-        var time = dateFormat(timestamp, 'HH:MM:00');
+        var time = dateFormat(timestamp, 'yyyy/mm/dd HH:MM:00');
 
         if (row_data == undefined)
           row_data = {};
 
         if (device == 'rPI_46_1047_1') {
-          tsv += time + "\t" + 
-            (row_data['10-000802b42b40'] / 1000) + "\t" +
-            (row_data['10-000802b44f21'] / 1000) + "\t" +
-            (row_data['10-000802b49201'] / 1000) + "\t" +
-            (row_data['10-000802b4b181'] / 1000) + "\t" +
-            (row_data['28-00000720f6e6'] / 1000) + "\t" +
-            (row_data['28-000007213db1'] / 1000) + "\t" +
-            (row_data['28-000007217131'] / 1000) + "\t" +
-            (row_data['28-0000072191f9'] / 1000) + "\t" +
-            (row_data['28-000007474609'] / 1000) + "\t" +
-            (row_data['28-000007491929'] / 1000) + "\t" +
-            "\n";
+          csv += time + "," + 
+            process_dallas_temp(row_data['10-000802b42b40']) + "," +
+            process_dallas_temp(row_data['10-000802b44f21']) + "," +
+            process_dallas_temp(row_data['10-000802b49201']) + "," +
+            process_dallas_temp(row_data['10-000802b4b181']) + "," +
+            process_dallas_temp(row_data['28-00000720f6e6']) + "," +
+            process_dallas_temp(row_data['28-000007213db1']) + "," +
+            process_dallas_temp(row_data['28-000007217131']) + "," +
+            process_dallas_temp(row_data['28-0000072191f9']) + "," +
+            process_dallas_temp(row_data['28-000007474609']) + "," +
+            process_dallas_temp(row_data['28-000007491929']) + "\n";
         }
       }
     }
 
-    fs.writeFileSync('data.tsv', tsv);
+    fs.writeFileSync('data.csv', csv);
 
     exec('gnuplot graphs/' + device + '_thumbnail.gnu', function (error, stdout, stderr) {
 
@@ -114,12 +128,20 @@ function updateThumbnail(device, date, callback) {
 
 var pattern = options['date'] + ' ' + options['device'];
 
-redis_client.keys(pattern, function (err, thumbnail_keys) {
-  async.series(_.map(thumbnail_keys, function(key) {
-    return function(callback) {
-      updateThumbnail(options['device'], key.toString('utf-8').substring(0, 10), callback);
-    }
-  }), function(err, results) {
-    process.exit(0);
+fs.readFile('conf/conf.json', 'utf8', function (err, configuration_text) {
+
+  if (err)
+    throw err;
+
+  var configuration = JSON.parse(configuration_text);
+
+  redis_client.keys(pattern, function (err, thumbnail_keys) {
+    async.series(_.map(thumbnail_keys, function(key) {
+      return function(callback) {
+        updateThumbnail(options['device'], key.toString('utf-8').substring(0, 10), configuration, callback);
+      }
+    }), function(err, results) {
+      process.exit(0);
+    });
   });
 });
