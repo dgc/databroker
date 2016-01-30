@@ -57,6 +57,6 @@ fs.readFile('conf/conf.json', 'utf8', function (err, configuration_text) {
 
     console.log("Subscribed to: " + configuration.devices[device_id].label);
 
-    mqtt_client.subscribe(device_id);
+    mqtt_client.subscribe(device_id, { qos: 2 } );
   });
 });
