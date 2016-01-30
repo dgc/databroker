@@ -29,7 +29,7 @@ div.header {
 }
 
 a {
-  color: #00B7FF;
+  color: #0000c0;
 }
 
 ol.breadcrumbs {
@@ -129,4 +129,44 @@ span.nav_arrow {
   font-size: 150%;
   color: gray;
   vertical-align: middle;
+}
+
+table.device_status th,
+table.devices,
+table.sensor_summary th {
+  text-align: left;
+}
+
+table.devices th,
+table.devices td,
+table.device_status th,
+table.device_status td,
+table.sensor_summary th,
+table.sensor_summary td {
+  padding: 4px;
+  border: 1px solid gray;
+}
+
+table.device_status th,
+table.devices th,
+table.sensor_summary th {
+  background: gray;
+  color: white;
+}
+
+table.sensor_summary th,
+table.device_status,
+table.devices,
+table.sensor_summary {
+  border-collapse: collapse;
+  text-align: left;
+}
+
+span.tag {
+  background: black;
+  color: white;
+  margin-left: 4px;
+  padding-left: 6px;
+  padding-right: 6px;
+  border-radius: 3px;
 }

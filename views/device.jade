@@ -3,8 +3,63 @@ extends layout
 block content
   h1= device_label
 
+  if device.description
+    h2 Description
+    p!= device.description
+
+  h2 Device Information
+
+  table.device_status
+    if device.type
+      tr
+        th Type
+        td= device.type
+    if device.version
+      tr
+        th OS
+        td= device.version
+
+    if device_status
+        if device_status["timestamp"]
+          tr
+            th Last status
+            td= dateformat(1000 * device_status["timestamp"], "dd mmmm yyyy, HH:MM:ss")
+        if device_status["ipv4_address"]
+          tr
+            th IPv4 address
+            td= device_status["ipv4_address"]
+        if device_status["load"] !== null
+          tr
+            th CPU load
+            td= device_status["load"]
+        if device_status["space"]
+          tr
+            th Storage used
+            td= device_status["space"] + "%"
+
+  
+  h2 Sensors
+
+  table.sensor_summary
+    tr
+      th ID
+      th Label
+      th Class
+      th Model
+
+    each sensor_id in Object.keys(sensors)
+      tr
+        td= sensor_id
+        td= sensors[sensor_id]["label"]
+        td= sensors[sensor_id]["type"]
+        td= sensors[sensor_id]["sensor_model"]
+
   h2 Readings
 
+  if device.tags
+    if device.tags.decommissioned
+      p
+        i Note: This device has been decommissioned and no new data is expected from the device.
   if most_recent_month
     p
       span The readings for the most recent month are 

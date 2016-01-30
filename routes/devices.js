@@ -26,16 +26,31 @@ router.use('/:device_id/sensors/', sensors);
 /* GET devices listing. */
 router.get('/', function(req, res) {
 
-  var devices = _.map(_.keys(configuration.devices), function (key) {
-    return ["/devices/" + key, configuration.devices[key].label];
+  var status_keys = _.map(_.keys(configuration.devices), function (key) {
+    return "status " + key;
   });
+  
+  redis_client.mget(status_keys, function (err, status_reports) {
 
-  res.render('devices', {
-    breadcrumbs: [
-      { label: 'Home', uri: '/' },
-      { label: 'Devices' }
-    ],
-    devices: devices
+    var reports = {};
+
+    _.each(_.keys(configuration.devices), function (device_id, index) {
+      if (status_reports[index] != null) {
+        var json_report = JSON.parse(status_reports[index]);
+        reports[device_id] = json_report[json_report.length - 1];
+      }
+    });
+
+    res.render('devices', {
+      breadcrumbs: [
+        { label: 'Home', uri: '/' },
+        { label: 'Devices' }
+      ],
+      devices: configuration.devices,
+      reports: reports,
+      dateformat: dateformat,
+      _: _
+    });
   });
 });
 
@@ -61,108 +76,114 @@ router.get('/:device_id', function(req, res) {
 
   var device_id = req.device_id;
 
-  var sensors = _.map(_.keys(configuration.devices[device_id].sensors), function (key) {
-    return ["/devices/" + device_id + '/sensors/' + key,
-      configuration.devices[device_id].sensors[key].label];
-  });
+  redis_client.get("status " + device_id, function(err, device_status) {
 
-  get_log_days(req.device_id, function (err, days) {
-
-    var thumbnail_keys = _.map(days, function(day) {
-      return "thumbnail " + day;
-    });
-
-    var most_recent_month;
-    
-    if (days.length > 0) {
-      most_recent_month = days.sort()[days.length - 1].substring(0, 7);
+    if (device_status !== null) {
+      device_status = JSON.parse(device_status);
+      device_status = device_status[device_status.length - 1];
     }
 
-    async.map(thumbnail_keys, key_exists, function(err, thumbnail_exists) {
-
-      var thumbnails = {};
-
-      _.each(days, function(day, index) {
-        if (thumbnail_exists[index] == 1) {
-          thumbnails[day] = '/devices/' + device_id + '/thumbnails/' + day.substring(0, 10) + '.png';
-        }
+    get_log_days(req.device_id, function (err, days) {
+  
+      var thumbnail_keys = _.map(days, function(day) {
+        return "thumbnail " + day;
       });
-
-      readings = _.map(days.sort(), function(day) {
-        return ["/devices/" + device_id + "/data.csv?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10), day.substring(0, 10)];
-      });
-
-      var readings = _.groupBy(readings, function(day) {
-        return day[1].substring(0, 7);
-      });
-
-      days = _.map(days, function(day) {
-
-        var date = moment(day.substring(0, 10));
-        var date_string = day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10);
-
-        // Day adjustment, starting from Sunday to get to Monday.
-        var day_adjust = [-6, 0, -1, -2, -3, -4, -5];
-
-        var days_since_sunday = date.day();
-        var days_since_monday = (days_since_sunday + 6) % 7;
-        var start_of_week = date.clone().add(day_adjust[days_since_sunday], 'days');
-        var label = date.format("DD MMM");
-
-        var csv_url = "/devices/" + device_id + "/data.csv?day=" + date_string;
-
-        var xlsx_url;
-        
-        if (device_id == "rPI_46_1047_1")
-          xlsx_url = "/devices/" + device_id + "/data.xlsx?day=" + date_string;
-
-        var day_metadata = {
-          key: day,
-          thumbnail: thumbnails[day],
-          date: date,
-          monday: start_of_week,
-          label: label,
-          dow: days_since_monday,
-          csv: csv_url,
-          xlsx: xlsx_url
-        };
-
-        return day_metadata;
-      })
-
-      var calendar = _.groupBy(days, function(day) {
-        return day.monday;
-      });
-
-      calendar = _.map(calendar, function(days, sow) {
-        week = [];
-        _.each(days, function(day) {
-          week[day.dow] = day;
+  
+      var most_recent_month;
+      
+      if (days.length > 0) {
+        most_recent_month = days.sort()[days.length - 1].substring(0, 7);
+      }
+  
+      async.map(thumbnail_keys, key_exists, function(err, thumbnail_exists) {
+  
+        var thumbnails = {};
+  
+        _.each(days, function(day, index) {
+          if (thumbnail_exists[index] == 1) {
+            thumbnails[day] = '/devices/' + device_id + '/thumbnails/' + day.substring(0, 10) + '.png';
+          }
         });
-        return [sow, week, false];
-      });
-
-      _.each(calendar, function(week, i) {
-        if (i > 0) {
-          var diff = moment(calendar[i][0]) - moment(calendar[i - 1][0]);
-
-          if (diff > (((7 * 24) + 1) * 60 * 60 * 1000))
-            week[2] = true;
-        }
-      });
-
-      res.render('device', {
-        breadcrumbs: [
-          { label: 'Home', uri: '/' },
-          { label: 'Devices', uri: '/devices' },
-          { label: configuration.devices[device_id].label }
-        ],
-        device_label: configuration.devices[req.device_id].label,
-        readings: readings,
-        calendar: calendar,
-        sensors: sensors,
-        device_id: device_id,
-        most_recent_month: most_recent_month
+  
+        readings = _.map(days.sort(), function(day) {
+          return ["/devices/" + device_id + "/data.csv?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10), day.substring(0, 10)];
+        });
+  
+        var readings = _.groupBy(readings, function(day) {
+          return day[1].substring(0, 7);
+        });
+  
+        days = _.map(days, function(day) {
+  
+          var date = moment(day.substring(0, 10));
+          var date_string = day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10);
+  
+          // Day adjustment, starting from Sunday to get to Monday.
+          var day_adjust = [-6, 0, -1, -2, -3, -4, -5];
+  
+          var days_since_sunday = date.day();
+          var days_since_monday = (days_since_sunday + 6) % 7;
+          var start_of_week = date.clone().add(day_adjust[days_since_sunday], 'days');
+          var label = date.format("DD MMM");
+  
+          var csv_url = "/devices/" + device_id + "/data.csv?day=" + date_string;
+  
+          var xlsx_url;
+          
+          if (device_id == "rPI_46_1047_1")
+            xlsx_url = "/devices/" + device_id + "/data.xlsx?day=" + date_string;
+  
+          var day_metadata = {
+            key: day,
+            thumbnail: thumbnails[day],
+            date: date,
+            monday: start_of_week,
+            label: label,
+            dow: days_since_monday,
+            csv: csv_url,
+            xlsx: xlsx_url
+          };
+  
+          return day_metadata;
+        })
+  
+        var calendar = _.groupBy(days, function(day) {
+          return day.monday;
+        });
+  
+        calendar = _.map(calendar, function(days, sow) {
+          week = [];
+          _.each(days, function(day) {
+            week[day.dow] = day;
+          });
+          return [sow, week, false];
+        });
+  
+        _.each(calendar, function(week, i) {
+          if (i > 0) {
+            var diff = moment(calendar[i][0]) - moment(calendar[i - 1][0]);
+  
+            if (diff > (((7 * 24) + 1) * 60 * 60 * 1000))
+              week[2] = true;
+          }
+        });
+  
+        res.render('device', {
+          breadcrumbs: [
+            { label: 'Home', uri: '/' },
+            { label: 'Devices', uri: '/devices' },
+            { label: configuration.devices[device_id].label }
+          ],
+          device_label: configuration.devices[req.device_id].label,
+          readings: readings,
+          calendar: calendar,
+          sensors: configuration.devices[device_id].sensors,
+          device: configuration.devices[device_id],
+          device_id: device_id,
+          device_status: device_status,
+          dateformat: dateformat,
+          most_recent_month: most_recent_month
+        });
       });
     });
   });

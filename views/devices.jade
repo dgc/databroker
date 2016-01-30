@@ -1,11 +1,39 @@
 extends layout
 
+mixin device_list(devices)
+
+  table.devices
+    tr
+      th Device
+      th Last Report
+      th Tags
+
+    each details, device_id in devices
+      tr
+        td
+          a(href="/devices/#{device_id}") #{details.label}
+
+        if details.tags["no reports"]
+          td
+            i Not applicable
+        else if reports[device_id] != null
+          td= dateformat(1000 * reports[device_id]["timestamp"], "dd mmmm yyyy, HH:MM:ss")
+        else
+          td
+
+        if details.tags
+          td
+            each key in _.keys(details.tags)
+              span.tag= key
+        else
+          td
+
 block content
 
-  h1 Devices
+  h1 Active Devices
 
-  ul
-    each device in devices
-      li
-        a(href=device[0]) #{device[1]}
-    
+  +device_list(_.pick(devices, function (device) { return device.tags.decommissioned == null }))
+
+  h1 Decommissioned Devices
+
+  +device_list(_.pick(devices, function (device) { return device.tags.decommissioned != null }))
