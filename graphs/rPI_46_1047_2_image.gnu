@@ -11,23 +11,23 @@ set multiplot
 set size 1.0, 0.75
 set origin 0.0, 0.25
 
+set lmargin at screen 0.06
+set bmargin at screen 0.25
+
 set xdata time
 set xrange [ 0.0000 : 1440.000 ] noreverse nowriteback
 set yrange [ 10.0000 : 30.000 ] noreverse nowriteback
-set xlabel "Time of day"
+unset xlabel
 set ylabel "Temperature (Celcius)"
-
-set lmargin at screen 0.06
-
-# unset ytics
-# unset xtics
-# unset border
 
 set key right top outside
 
 set style line 101 lc rgb '#808080' lt 1 lw 1
 set tics nomirror out scale 0.75
 set border 3 front ls 101
+
+set xtics scale 0
+set format x ""
 
 set style line 102 lc rgb '#a0a0a0' lt 0 lw 1
 set grid back ls 102
@@ -43,6 +43,9 @@ plot 'data.csv' using 0:2  title "Evo Water"      with lines linecolor rgb "#5B9
 set size 1.0, 0.25
 set origin 0.0, 0.0
 
+unset bmargin
+set tmargin at screen 0.23
+
 set xdata time
 set xrange [ 0.0000 : 1440.000 ] noreverse nowriteback
 set yrange [ 0.0000 : 5.000 ] noreverse nowriteback
@@ -51,6 +54,8 @@ set ylabel "Flow (L/min)"
 # unset ytics
 # unset xtics
 # unset border
+
+set format
 
 set key right top outside
 
