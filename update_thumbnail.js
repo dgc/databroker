@@ -54,6 +54,14 @@ function updateThumbnail(device, date, configuration, callback) {
       } else {
         return raw / 1000;
       }
+
+    case "YF-S201":
+
+      if (raw == undefined) {
+        return "";
+      } else {
+        return raw / (60 * 7.5);
+      }
     }
 
     return "";
