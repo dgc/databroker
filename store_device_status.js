@@ -1,46 +1,53 @@
 // Script to store device status
 
-var mqtt_server = 'labbroker.soton.ac.uk';
-var mqtt_port = 1883;
-
-var max_entries = 1000;
-
 var fs = require('fs');
 var sprintf = require('sprintf-js').sprintf;
 var mqtt = require('mqtt');
 var redis = require('redis');
 var _ = require('underscore');
 
-var mqtt_client = mqtt.createClient(mqtt_port, mqtt_server);
-var redis_client = redis.createClient();
+fs.readFile('conf/conf.json', 'utf8', function (err, configuration_text) {
 
-mqtt_client.on('message', function (topic, message) {
+  if (err)
+    throw err;
 
-  try {
+  var configuration = JSON.parse(configuration_text);
 
-   var data = JSON.parse(message);
+  var mqtt_server = configuration.server.address; // 'labbroker.soton.ac.uk';
+  var mqtt_port   = configuration.server.port; // 1883;
+  var max_entries = configuration.server.max_health_readings; // 1000;
 
-   var key = "status " + data["device"];
+  var mqtt_client = mqtt.createClient(mqtt_port, mqtt_server);
+  var redis_client = redis.createClient();
 
-   redis_client.get(key, function (err, entries) {
+  mqtt_client.on('message', function (topic, message) {
 
-     if (entries == null) {
-       entries = [];
-     } else {
-       entries = JSON.parse(entries);
-     }
+    try {
 
-     entries = entries.slice(1 - max_entries);
+      var data = JSON.parse(message);
 
-     entries.push(data);
+      var key = "status " + data["device"];
 
-     redis_client.set(key, JSON.stringify(entries));
-   });
+      redis_client.get(key, function (err, entries) {
 
-  } catch (ex) {
-    console.log(ex);
-    console.log('Failed to process (' + topic + '): ' + message);
-  }
+        if (entries === null) {
+          entries = [];
+        } else {
+          entries = JSON.parse(entries);
+        }
+
+        entries = entries.slice(1 - max_entries);
+
+        entries.push(data);
+  console.dir(data);
+        redis_client.set(key, JSON.stringify(entries));
+      });
+
+    } catch (ex) {
+      console.log(ex);
+      console.log('Failed to process (' + topic + '): ' + message);
+    }
+  });
+
+  mqtt_client.subscribe('device_status');
 });
-
-mqtt_client.subscribe('device_status');
