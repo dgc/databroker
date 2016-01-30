@@ -1,7 +1,19 @@
 {
+  "server": {
+
+    "address" : "labbroker.soton.ac.uk",
+    "port"    : 1883,
+
+    "max_health_readings" : 1000
+  },
+
   "devices": {
 
     "power_30_4007_1": {
+
+      "type": "Dell laptop",
+
+      "version": "Windows 7",
 
       "label": "Power meters in 30:4007",
 
@@ -11,20 +23,39 @@
         "sensor_3": { "label": "Power Meter 3", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "3", "units_label": "Watts" },
         "sensor_4": { "label": "Power Meter 4", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "4", "units_label": "Watts" },
         "sensor_5": { "label": "Power Meter 5", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "5", "units_label": "Watts" }
+      },
+
+      "tags": {
+       "decommissioned" : { },
+       "no reports" : { }
       }
     },
 
     "power_30_1069_1": {
+
+      "type": "Viglen PC",
+
+      "version": "Windows 7",
 
       "label": "Power meters in 30:1069",
 
       "sensors": {
         "C1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
         "C2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" }
+      },
+
+      "tags": {
+       "test" : { },
+       "decommissioned" : { },
+       "no reports" : { }
       }
     },
 
     "rPI_30_1071_1": {
+
+      "type": "Raspberry Pi 2",
+
+      "version": "Raspian",
 
       "label": "Raspberry Pi in 30:1071",
 
@@ -32,12 +63,19 @@
         "C1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
         "C2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
         "C9": { "label": "Oven in 30:1013",        "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "9", "units_label": "Watts" }
+      },
+
+      "tags": {
       }
     },
 
     "rPI_46_1047_1": {
 
-      "label": "Temperature sensors in 46:1047",
+      "type": "Raspberry Pi",
+
+      "version": "Raspian",
+
+      "label": "Temperature sensors (Bench) in 46:1047",
 
       "sensors": {
 
@@ -52,21 +90,58 @@
         "28-000007474609": { "label": "Table Bottom", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
         "28-000007491929": { "label": "Table Top",    "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" }
 
+      },
+
+      "tags": {
+      }
+    },
+
+    "rPI_46_1047_2": {
+
+      "type": "Raspberry Pi 2",
+
+      "version": "Raspian",
+
+      "label": "Temperature sensors (Back Corridor) in 46:1047",
+
+      "sensors": {
+
+        "28-000006dd5bbd": { "label": "Evo water temperature",      "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000006ddbe63": { "label": "Spitfire water temperature", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-00000722cf9d": { "label": "Chiller room",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007486f53": { "label": "Gas cupboard",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+
+        "sensor0": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" },
+        "sensor1": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" }
+      },
+
+      "tags": {
       }
     },
 
     "Arduino_46_1047_1": {
 
+      "type": "Arduino",
+
       "label": "Chiller flow rate sensors in 46:1047",
+
+      "description": "This Arduino was used to monitor the flow meters for the Evo and Spitfire chillers in the chiller room. These meters are now monitored instead by the <a href='/devices/rPI_46_1047_2'>Raspberry Pi on the back corridor</a>.",
 
       "sensors": {
 
         "D2": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" },
         "D3": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" }
+      },
+
+      "tags": {
+       "decommissioned" : { },
+       "no reports" : { }
       }
     },
 
     "Arduino_30_1081_1": {
+
+      "type": "Arduino",
 
       "label": "Temperature and MIRA output level in 30:1081",
 
@@ -75,10 +150,16 @@
         "A0": { "label": "Temperature sensor", "type": "temperature", "sensor_model":"FIXME", "units_label": "Celcius" },
         "A1": { "label": "Mira", "type": "power", "sensor_model":"Voltage", "units_label": "Voltage" },
         "A2": { "label": "Photoreceiver", "type": "photoreceiver", "sensor_model":"Voltage", "units_label": "Voltage" }
+      },
+
+      "tags": {
+       "no reports" : { }
       }
     },
 
     "Arduino_Test" : {
+
+      "type": "Arduino",
 
       "label": "Test sensor in 30:1069",
 
@@ -88,6 +169,12 @@
         "A2" : { "label": "Visible Femtowatt Photoreceiver", "units_label": "Watts" },
         "DHT_TEMP" : { "label": "DHT Temperature", "units_label": "Celcius" },
         "DHT_HUMIDITY" : { "label": "DHT Humidity" }
+      },
+
+      "tags": {
+       "test" : { },
+       "decommissioned" : { },
+       "no reports" : { }
       }
     }
   }
