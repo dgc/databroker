@@ -131,6 +131,10 @@ function updateThumbnail(device, date, configuration, callback) {
         var key = 'image ' + date + ' ' + device;
 
         redis_client.set(key, image);
+
+        fs.unlinkSync('data.csv');
+        fs.unlinkSync('output.png');
+
         callback();
       });
     });
