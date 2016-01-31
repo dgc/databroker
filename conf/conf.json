@@ -13,6 +13,12 @@
 
       "type": "Dell laptop",
 
+      "building" : "30",
+      "room" : "4007",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
+
       "version": "Windows 7",
 
       "label": "Power meters in 30:4007",
@@ -35,6 +41,12 @@
 
       "type": "Viglen PC",
 
+      "building" : "30",
+      "room" : "1069",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
+
       "version": "Windows 7",
 
       "label": "Power meters in 30:1069",
@@ -55,6 +67,12 @@
 
       "type": "Raspberry Pi 2",
 
+      "building" : "30",
+      "room" : "1071",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
+
       "version": "Raspian",
 
       "label": "Raspberry Pi in 30:1071",
@@ -72,6 +90,12 @@
     "rPI_46_1047_1": {
 
       "type": "Raspberry Pi",
+
+      "building" : "46",
+      "room" : "1047",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
 
       "version": "Raspian",
 
@@ -100,6 +124,12 @@
 
       "type": "Raspberry Pi 2",
 
+      "building" : "46",
+      "room" : "1047",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
+
       "version": "Raspian",
 
       "label": "Temperature sensors (Back Corridor) in 46:1047",
@@ -123,6 +153,12 @@
 
       "type": "Arduino",
 
+      "building" : "46",
+      "room" : "1047",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
+
       "label": "Chiller flow rate sensors in 46:1047",
 
       "description": "This Arduino was used to monitor the flow meters for the Evo and Spitfire chillers in the chiller room. These meters are now monitored instead by the <a href='/devices/rPI_46_1047_2'>Raspberry Pi on the back corridor</a>.",
@@ -143,6 +179,12 @@
 
       "type": "Arduino",
 
+      "building" : "30",
+      "room" : "1081",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
+
       "label": "Temperature and MIRA output level in 30:1081",
 
       "sensors": {
@@ -161,6 +203,12 @@
 
       "type": "Arduino",
 
+      "building" : "30",
+      "room" : "1069",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
+
       "label": "Test sensor in 30:1069",
 
       "sensors": {
@@ -176,6 +224,42 @@
        "decommissioned" : { },
        "no reports" : { }
       }
+    }
+  },
+
+  "sensor_types" : {
+
+    "DS18B20" : {
+
+      "manufacturer" : {
+        "name" : "Maxim Integrated"
+      },
+
+      "datasheet" : "http://datasheets.maximintegrated.com/en/ds/DS18B20.pdf"
+    },
+
+    "RHT03" : {
+    },
+
+    "CurrentCostTIAM" : {
+    },
+
+    "YF-S201" : {
+    },
+
+    "Voltage" : {
+    },
+
+    "FIXME" : {
+    }
+  },
+
+  "people" : {
+
+    "dgc" : {
+
+      "name" : "Don Cruickshank",
+      "email" : "dgc@ecs.soton.ac.uk"
     }
   }
 }

@@ -168,6 +168,7 @@ router.get('/:device_id', function(req, res) {
             { label: 'Devices', uri: '/devices' },
             { label: configuration.devices[device_id].label }
           ],
+          configuration: configuration,
           device_label: configuration.devices[req.device_id].label,
           readings: readings,
           calendar: calendar,

@@ -14,10 +14,26 @@ block content
       tr
         th Type
         td= device.type
+    if device.site
+      tr
+        th Site
+        td= device.site
+    if device.building
+      tr
+        th Building
+        td= device.building
+    if device.room
+      tr
+        th Room
+        td= device.room
     if device.version
       tr
         th OS
         td= device.version
+    if device.contact
+      tr
+        th Contact
+        td= configuration["people"][device.contact].name
 
     if device_status
         if device_status["timestamp"]
