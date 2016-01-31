@@ -16,7 +16,7 @@ set bmargin at screen 0.25
 
 set xdata time
 set xrange [ 0.0000 : 1440.000 ] noreverse nowriteback
-set yrange [ 10.0000 : 30.000 ] noreverse nowriteback
+set yrange [ 10.0000 : 35.000 ] noreverse nowriteback
 unset xlabel
 set ylabel "Temperature (Celcius)"
 
