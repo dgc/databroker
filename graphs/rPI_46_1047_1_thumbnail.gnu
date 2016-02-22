@@ -28,4 +28,5 @@ plot 'data.csv' using 0:2  notitle with lines linecolor rgb "#5B9BD5", \
      'data.csv' using 0:8  notitle with lines linecolor rgb "#255E91", \
      'data.csv' using 0:9  notitle with lines linecolor rgb "#9E480E", \
      'data.csv' using 0:10 notitle with lines linecolor rgb "#636363", \
-     'data.csv' using 0:11 notitle with lines linecolor rgb "#997300"
+     'data.csv' using 0:11 notitle with lines linecolor rgb "#997300", \
+     'data.csv' using 0:12 notitle with lines linecolor rgb "#994300"

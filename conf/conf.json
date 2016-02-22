@@ -103,17 +103,17 @@
 
       "sensors": {
 
-        "10-000802b42b40": { "label": "Hannah's Box", "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
-        "10-000802b44f21": { "label": "Pete's Box",   "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
-        "10-000802b49201": { "label": "Ed's Box",     "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
-        "10-000802b4b181": { "label": "Tsunami",      "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
-        "28-00000720f6e6": { "label": "Aircon Left",  "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007213db1": { "label": "Adam's Box",   "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007217131": { "label": "Spitfire",     "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-0000072191f9": { "label": "Aircon Right", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007474609": { "label": "Table Bottom", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007491929": { "label": "Table Top",    "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" }
-
+        "10-000802b42b40": { "label": "Hannah's Box",   "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "10-000802b44f21": { "label": "Pete's Box",     "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "10-000802b49201": { "label": "Ed's Box",       "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "10-000802b4b181": { "label": "Tsunami",        "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
+        "28-00000720f6e6": { "label": "Aircon Left",    "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007213db1": { "label": "Adam's Box",     "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007217131": { "label": "Spitfire",       "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-0000072191f9": { "label": "Aircon Right",   "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007474609": { "label": "Table Bottom",   "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007491929": { "label": "Table Top",      "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007215197": { "label": "Aircon Control", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" } 
       },
 
       "tags": {
