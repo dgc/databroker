@@ -1,5 +1,5 @@
 {
-  "server": {
+  "mqtt_server": {
 
     "address" : "labbroker.soton.ac.uk",
     "port"    : 1883,

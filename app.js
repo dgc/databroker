@@ -9,6 +9,11 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var devices = require('./routes/devices');
 
+var store_readings_and_status = require('./lib/store_readings_and_status');
+
+// Store readings and status messages
+store_readings_and_status();
+
 var app = express();
 
 var configuration = require('./configuration');

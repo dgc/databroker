@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 var debug = require('debug')('databroker');
 var app = require('../app');
+var conf = require('../conf/conf.json');
 
 app.set('port', process.env.PORT || 3000);
 
