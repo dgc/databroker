@@ -114,49 +114,58 @@ function updateThumbnail(device, date, configuration, callback) {
       }
     }
 
-    fs.writeFileSync('data.csv', csv);
+    fs.writeFile('data.csv', csv, function (error) {
 
-    exec('gnuplot graphs/' + device + '_thumbnail.gnu', function (error, stdout, stderr) {
+      exec('gnuplot graphs/' + device + '_thumbnail.gnu', function (error, stdout, stderr) {
 
-      var image = fs.readFileSync('output.png');
+        fs.readFile('output.png', function (error, image) {
 
-      var key = 'thumbnail ' + date + ' ' + device;
+          var key = 'thumbnail ' + date + ' ' + device;
 
-      redis_client.set(key, image);
+          redis_client.set(key, image);
 
-      exec('gnuplot graphs/' + device + '_image.gnu', function (error, stdout, stderr) {
+          exec('gnuplot graphs/' + device + '_image.gnu', function (error, stdout, stderr) {
 
-        var image = fs.readFileSync('output.png');
+            fs.readFile('output.png', function (error, image) {
 
-        var key = 'image ' + date + ' ' + device;
+              var key = 'image ' + date + ' ' + device;
 
-        redis_client.set(key, image);
+              redis_client.set(key, image);
 
-        fs.unlinkSync('data.csv');
-        fs.unlinkSync('output.png');
-
-        callback();
+              fs.unlink('data.csv', function () {
+                fs.unlink('output.png', function () {
+                  callback();
+                });
+              });
+            });
+          });
+        });
       });
     });
   });
 }
 
-var pattern = options['date'] + ' ' + options['device'];
+function updateThumbnails(options, callback) {
 
-fs.readFile('conf/conf.json', 'utf8', function (err, configuration_text) {
+  var pattern = options['date'] + ' ' + options['device'];
 
-  if (err)
-    throw err;
+  fs.readFile('conf/conf.json', 'utf8', function (err, configuration_text) {
 
-  var configuration = JSON.parse(configuration_text);
+    if (err)
+      throw err;
 
-  redis_client.keys(pattern, function (err, thumbnail_keys) {
-    async.series(_.map(thumbnail_keys, function(key) {
-      return function(callback) {
-        updateThumbnail(options['device'], key.toString('utf-8').substring(0, 10), configuration, callback);
-      }
-    }), function(err, results) {
-      process.exit(0);
+    var configuration = JSON.parse(configuration_text);
+
+    redis_client.keys(pattern, function (err, thumbnail_keys) {
+      async.series(_.map(thumbnail_keys, function(key) {
+        return function(callback) {
+          updateThumbnail(options['device'], key.toString('utf-8').substring(0, 10), configuration, callback);
+        }
+      }), function(err, results) {
+        callback(err);
+      });
     });
   });
-});
+}
+
+updateThumbnails(options, function(err) { process.exit(0); } );
