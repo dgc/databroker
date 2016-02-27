@@ -145,8 +145,8 @@
         "28-00000722cf9d": { "label": "Chiller room",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
         "28-000007486f53": { "label": "Gas cupboard",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
 
-        "sensor0": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" },
-        "sensor1": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" }
+        "sensor0": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" },
+        "sensor1": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" }
       },
 
       "tags": {
