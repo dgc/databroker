@@ -10,13 +10,17 @@ var users = require('./routes/users');
 var devices = require('./routes/devices');
 
 var store_readings_and_status = require('./lib/store_readings_and_status');
+var cron = require('./lib/cron.js');
+
+var configuration = require('./configuration');
 
 // Store readings and status messages
 store_readings_and_status();
 
-var app = express();
+// Start cron jobs
+cron(configuration);
 
-var configuration = require('./configuration');
+var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
