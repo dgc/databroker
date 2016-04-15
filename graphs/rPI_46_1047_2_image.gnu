@@ -36,7 +36,8 @@ x = 0.0
 plot 'data.csv' using 0:2  title "Spitfire Water"      with lines linecolor rgb "#5B9BD5", \
      'data.csv' using 0:3  title "Evo Water" with lines linecolor rgb "#ED7D31", \
      'data.csv' using 0:4  title "Chiller Room"   with lines linecolor rgb "#A5A5A5", \
-     'data.csv' using 0:5  title "Gas Cupboard"   with lines linecolor rgb "#FFC000"
+     'data.csv' using 0:5  title "Gas Cupboard"   with lines linecolor rgb "#FFC000", \
+     'data.csv' using 0:6  title "BL1 Chamber"    with lines linecolor rgb "#9E480E"
 
 ############################## Flow rates ##############################
 
@@ -67,7 +68,7 @@ set style line 102 lc rgb '#a0a0a0' lt 0 lw 1
 set grid back ls 102
 x = 0.0
 
-plot 'data.csv' using 0:6  title "Spitfire Water"      with lines linecolor rgb "#5B9BD5", \
-     'data.csv' using 0:7  title "Evo Water" with lines linecolor rgb "#ED7D31"
+plot 'data.csv' using 0:7  title "Spitfire Water" with lines linecolor rgb "#5B9BD5", \
+     'data.csv' using 0:8  title "Evo Water"      with lines linecolor rgb "#ED7D31"
 
 unset multiplot
