@@ -107,17 +107,16 @@
 
       "sensors": {
 
-        "10-000802b42b40": { "label": "Hannah's Box",   "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
-        "10-000802b44f21": { "label": "Pete's Box",     "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
-        "10-000802b49201": { "label": "Ed's Box",       "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
-        "10-000802b4b181": { "label": "Tsunami",        "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius" },
-        "28-00000720f6e6": { "label": "Aircon Left",    "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007213db1": { "label": "Adam's Box",     "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007217131": { "label": "Spitfire",       "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-0000072191f9": { "label": "Aircon Right",   "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007474609": { "label": "Table Bottom",   "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007491929": { "label": "Table Top",      "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007215197": { "label": "Aircon Control", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" } 
+        "10-000802b42b40": { "label": "Hannah's Box",     "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "10-000802b44f21": { "label": "BL1",              "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "10-000802b49201": { "label": "BL2",              "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "10-000802b4b181": { "label": "Tsunami",          "type": "temperature", "sensor_model": "RHT03",   "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-00000720f6e6": { "label": "Oscillator Left",  "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-000007213db1": { "label": "Adam's Box",       "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-000007217131": { "label": "Spitfire",         "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-0000072191f9": { "label": "Oscillator Right", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-000007474609": { "label": "Table Bottom",     "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-000007491929": { "label": "Table Top",        "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" }
       },
 
       "tags": {
@@ -140,14 +139,14 @@
 
       "sensors": {
 
-        "28-000006dd5bbd": { "label": "Evo water temperature",      "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000006ddbe63": { "label": "Spitfire water temperature", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-00000722cf9d": { "label": "Chiller room",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
-        "28-000007486f53": { "label": "Gas cupboard",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000006dd5bbd": { "label": "Evo water temperature",      "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-000006ddbe63": { "label": "Spitfire water temperature", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-00000722cf9d": { "label": "Chiller room",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
+        "28-000007486f53": { "label": "Gas cupboard",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
         "28-000007659998": { "label": "BL1 Chamber",                "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
 
-        "sensor0": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" },
-        "sensor1": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" }
+        "sensor0": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions", "period": 1, "period_unit": "minute" },
+        "sensor1": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions", "period": 1, "period_unit": "minute" }
       },
 
       "tags": {
