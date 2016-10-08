@@ -10,6 +10,10 @@ block content
   h2 Device Information
 
   table.device_status
+    if device_id
+      tr
+        th ID
+        td= device_id
     if device.type
       tr
         th Type
@@ -40,6 +44,10 @@ block content
           tr
             th Last status
             td= dateformat(1000 * device_status["timestamp"], "dd mmmm yyyy, HH:MM:ss")
+        if device_status["mac_address"]
+          tr
+            th MAC address
+            td= device_status["mac_address"]
         if device_status["ipv4_address"]
           tr
             th IPv4 address
@@ -64,6 +72,7 @@ block content
       th Model
       th Reading
       th Time
+      th Expected Response
 
     each sensor_id in Object.keys(sensors)
       tr
@@ -80,6 +89,17 @@ block content
         else
           td
           td
+        if sensors[sensor_id]["period"]
+          if sensors[sensor_id]["period_unit"] == "minute"
+            if sensors[sensor_id]["period"] == 1
+              td= "Every minute"
+            else
+              td= sensors[sensor_id]["period"] + " minutes"
+          else
+            td "Error"
+        else
+          td
+
 
   h2 Readings
 
