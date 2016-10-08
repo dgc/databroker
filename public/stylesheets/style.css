@@ -170,3 +170,67 @@ span.tag {
   padding-right: 6px;
   border-radius: 3px;
 }
+
+div#graph {
+  display: inline-block;
+  vertical-align: top;
+  width: 800px;
+}
+
+div#legend {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 20px;
+  width: 160px;
+}
+
+/* from d3test */
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+/*
+.x.axis path {
+  display: none;
+}
+*/
+
+.grid {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.0px;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.whiteout {
+  fill: none;
+  stroke: white;
+  stroke-width: 8.0px;
+}
+
+div.legend {
+/*  border: 1px solid gray;
+  background: #eee;
+  border-radius: 4px;*/
+  padding: 8px;
+}
+
+div#controls table th {
+  text-align: right;
+  width: 120px;
+}
+
+div#controls table td input,
+div#controls table td select {
+
+  width: 80px;
+}

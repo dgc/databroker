@@ -348,6 +348,51 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
   });
 });
 
+// Day view
+
+router.get('/:device_id/readings2/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
+
+  var device_id = req.device_id;
+
+  var year  = req.params.date.substring(0, 4);
+  var month = req.params.date.substring(5, 7);
+  var day   = req.params.date.substring(8, 10);
+
+  var data_key = year + "-" + month + "-" + day + " " + device_id;
+
+  var date = new Date(year + "-" + month + "-" + day);
+
+  var nextDay = new Date(date);
+  var prevDay = new Date(date);
+
+  prevDay.setDate(date.getDate() - 1);
+  nextDay.setDate(date.getDate() + 1);
+
+  redis_client.get(data_key, function(err, data) {
+
+    res.render('device_day2', {
+      breadcrumbs: [
+        { label: 'Home', uri: '/' },
+        { label: 'Devices', uri: '/devices' },
+        { label: configuration.devices[device_id].label, uri: '/devices/' + device_id },
+        { label: dateformat(date, "mmmm yyyy"), uri: year + "-" + month },
+        { label: dateformat(date, "d") }
+      ],
+      device_id: device_id,
+      device_label: configuration.devices[req.device_id].label,
+      device_configuration: "var config = " + JSON.stringify(configuration.devices[req.device_id]) + ";",
+      year: year,
+      month: month,
+      day: day,
+      date: date,
+      dateformat: dateformat,
+      next_day: nextDay,
+      prev_day: prevDay,
+      data: "var data = " + data + ";"
+    });
+  });
+});
+
 router.get('/:device_id/data.:format?', function (req, res) {
   
   function get_data(data, column, configuration) {
