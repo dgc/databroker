@@ -56,8 +56,8 @@
       "label": "Power meters in 30:1069",
 
       "sensors": {
-        "C1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
-        "C2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" }
+        "1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
+        "2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" }
       },
 
       "tags": {
@@ -82,9 +82,9 @@
       "label": "Raspberry Pi in 30:1071",
 
       "sensors": {
-        "C1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
-        "C2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
-        "C9": { "label": "Oven in 30:1013",        "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "9", "units_label": "Watts" }
+        "1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
+        "2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
+        "9": { "label": "Oven in 30:1013",        "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "9", "units_label": "Watts" }
       },
 
       "tags": {
