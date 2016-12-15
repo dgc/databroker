@@ -153,6 +153,34 @@
       }
     },
 
+    "rPI_46_1047_3": {
+
+      "type": "Raspberry Pi 3",
+
+      "building" : "46",
+      "room" : "1047",
+      "site" : "Highfield Campus",
+      
+      "contact" : "dgc",
+
+      "version": "Raspian",
+
+      "label": "Power Consumption in Xray lab",
+
+      "sensors": {
+        "1": { "label": "Evo Chiller",              "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
+        "2": { "label": "Spitfire Chiller",         "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
+        "3": { "label": "Tsunami Chiller",          "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "3", "units_label": "Watts" },
+        "4": { "label": "BL1 Andor PSU",            "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "4", "units_label": "Watts" },
+        "5": { "label": "BL1 Chamber Backing Pump", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "5", "units_label": "Watts" },
+        "6": { "label": "BL2 Chamber Backing Pump", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "6", "units_label": "Watts" }
+      },
+
+      "tags": {
+       "no reports" : { }
+      }
+    },
+
     "Arduino_46_1047_1": {
 
       "type": "Arduino",
