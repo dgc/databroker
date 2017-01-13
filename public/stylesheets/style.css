@@ -1,6 +1,15 @@
+@font-face {
+  font-family: 'OpenSans Regular';
+  src: url('/fonts/opensans_regular_ubasic/OpenSans-Regular-webfont.eot');
+  src: url('/fonts/opensans_regular_ubasic/OpenSans-Regular-webfont.eot?iefix') format('eot'),
+       url('/fonts/opensans_regular_ubasic/OpenSans-Regular-webfont.woff') format('woff'),
+       url('/fonts/opensans_regular_ubasic/OpenSans-Regular-webfont.ttf') format('truetype'),
+       url('/fonts/opensans_regular_ubasic/OpenSans-Regular-webfont.svg#webfont') format('svg');
+}
+
 body {
   padding: 20px 40px 0 40px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-family: /* "OpenSans Regular", */ "Lucida Grande", Helvetica, Arial, sans-serif;
   background: white;
   margin: 0;
 }
@@ -88,6 +97,11 @@ table.calendar_month div.download {
 
 table.calendar_month td.invalid {
   background: #eee;
+}
+
+div.day_data {
+  width: 125px;
+  height: 75px;
 }
 
 div.no_data {
@@ -234,3 +248,27 @@ div#controls table td select {
 
   width: 80px;
 }
+
+
+
+/* Bivariate chart */
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.area {
+  stroke-width: 0.0;
+}
+

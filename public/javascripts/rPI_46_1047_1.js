@@ -337,7 +337,7 @@ $('window').ready(function() {
 
     ],
 
-    data: convert_data(data, config),
+    data: convert_data_for_day_view(data, config),
 
     defaults: {
       visible: {},

@@ -1,4 +1,4 @@
-
+// devices.js
 
 var express = require('express');
 var router = express.Router();
@@ -16,12 +16,73 @@ var moment = require('moment');
 var async = require('async');
 var calendar = require('calendar');
 
-//var redis_client = redis.createClient();
 var redis_client = redis.createClient(null, null, { return_buffers: true });
 
 router.param('device_id', parameters.findDevice);
 
 router.use('/:device_id/sensors/', sensors);
+
+function month_view_data(config, data) {
+
+  var period = 300;
+
+  function compareNumbers(a, b) {
+    return a - b;
+  }
+
+  function closest_sample(s) {
+    return Math.floor((s + (period / 2)) / period) * period;
+  }
+
+  var results = {};
+
+  _.each(data, function (row) {
+
+    var timestamp = closest_sample(row.timestamp);
+
+    var aggregation = results[timestamp];
+
+    if (aggregation == undefined)
+      aggregation = { timestamp: timestamp };
+
+    _.each(Object.keys(row), function (key) {
+
+      var value = row[key];
+      var existing = aggregation[key];
+
+      if (existing == undefined) {
+
+        aggregation[key] = { l: value, h: value };
+
+      } else {
+
+        if (aggregation[key].l > value)
+          aggregation[key].l = value;
+
+        if (aggregation[key].h < value)
+          aggregation[key].h = value;
+      }
+    });
+
+    results[closest_sample(row.timestamp)] = aggregation;
+  });
+
+  var timestamps = [];
+
+  Object.keys(results).forEach(function (id) {
+    timestamps.push(results[id].timestamp);
+  });
+
+  var sorted_timestamps = timestamps.sort(compareNumbers);
+
+  var sorted_results = [];
+
+  sorted_timestamps.forEach(function (timestamp) {
+    sorted_results.push(results[timestamp]);
+  });
+
+  return sorted_results;
+}
 
 function convert_data(value, column, elapsed, configuration) {
   if (configuration[column]) {
@@ -49,8 +110,8 @@ function convert_data(value, column, elapsed, configuration) {
   }
 }
 
-
 /* GET devices listing. */
+
 router.get('/', function(req, res) {
 
   var status_keys = _.map(_.keys(configuration.devices), function (key) {
@@ -304,6 +365,86 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
   });
 });
 
+// D3 Month view
+
+router.get('/:device_id/readings2/:date(\\d{4}-\\d{2})', function(req, res) {
+
+  var device_id = req.device_id;
+
+  var yearString  = req.params.date.substring(0, 4);
+  var monthString = req.params.date.substring(5, 7);
+
+  var year  = parseInt(yearString);
+  var month = parseInt(monthString);
+
+  var cal = new calendar.Calendar(1).monthDays(year, month - 1);
+
+  cal = _.map(cal, function(week) {
+    return _.map(week, function(day) {
+      if (day == 0) {
+        return undefined;
+      } else {
+        return new Date(yearString + "-" + monthString + "-" + (('0' + day).slice(-2)));
+      }
+    });
+  });
+
+  var date      = new Date(yearString + "-" + monthString + "-01");
+  var prevMonth = new Date(yearString + "-" + monthString + "-01");
+  var nextMonth = new Date(yearString + "-" + monthString + "-01");
+
+  if (date.getMonth() == 0) {
+    prevMonth.setMonth(11);
+    prevMonth.setFullYear(date.getFullYear() - 1);
+    nextMonth.setMonth(1);
+  } else if (date.getMonth() == 11) {
+    prevMonth.setMonth(10);
+    nextMonth.setMonth(0);
+    nextMonth.setFullYear(date.getFullYear() + 1);
+  } else {
+    prevMonth.setMonth(date.getMonth() - 1);
+    nextMonth.setMonth(date.getMonth() + 1);
+  }
+
+  var key_pattern = yearString + "-" + monthString + "-[0-9][0-9] " + device_id;
+
+  redis_client.keys(key_pattern, function (err, data_keys) {
+
+    redis_client.mget(data_keys, function (err, responses) {
+
+      var day_data = {};
+
+      for (var i = 0; i < data_keys.length; i++) {
+
+        var data_key = data_keys[i];
+        var data_date = data_key.toString('utf-8').substring(0, 10);
+
+        day_data[data_date] = month_view_data(configuration.devices[device_id], JSON.parse(responses[i]));
+      }
+
+      res.render('device_month2', {
+        breadcrumbs: [
+          { label: 'Home', uri: '/' },
+          { label: 'Devices', uri: '/devices' },
+          { label: configuration.devices[device_id].label, uri: '/devices/' + device_id },
+          { label: dateformat(date, "mmmm yyyy") }
+        ],
+        device_id: device_id,
+        device_label: configuration.devices[req.device_id].label,
+        device_configuration: "var config = " + JSON.stringify(configuration.devices[req.device_id]) + ";",
+        year: year,
+        month: month,
+        calendar: cal,
+        date: date,
+        dateformat: dateformat,
+        day_data: JSON.stringify(day_data),
+        prev_month: prevMonth,
+        next_month: nextMonth
+      });
+    });
+  });
+});
+
 // Day view
 
 router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
@@ -348,7 +489,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
   });
 });
 
-// Day view
+// D3 Day view
 
 router.get('/:device_id/readings2/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
 

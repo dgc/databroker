@@ -307,20 +307,12 @@ function lineGraph(graphSettings) {
 
 $('window').ready(function() {
 
-  d3.select("div.graph_container")
-    .append("div")
-    .attr("id", "top_container");
-
-  d3.select("div.graph_container")
-    .append("div")
-    .attr("id", "bottom_container");
-
   lineGraph({
-    settings_id: "rPI_46_1047_2",
-    selector: "div#top_container",
+    settings_id: "rPI_46_1047_3",
+    selector: "div.graph_container",
     color: d3.scale.category10(),
     width: 860,
-    height: 400,
+    height: 600,
     day: today,
     timeProperty: "Time",
     margin: {
@@ -329,64 +321,27 @@ $('window').ready(function() {
       bottom: 30,
       left: 50
     },
-    yAxisLabel: "Temperature (ºC)",
+    yAxisLabel: "Power (Watts)",
     columns: [
 
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
 
-      "28-000006dd5bbd",
-      "28-000006ddbe63",
-      "28-00000722cf9d",
-      "28-000007486f53",
-      "28-000007659998",
     ],
-
-    data: convert_data_for_day_view(data, config),
-
-    defaults: {
-      visible: {},
-      min_y: 14,
-      max_y: 23,
-      start_time: 0,
-      end_time: 24,
-    },
-  });
-
-  lineGraph({
-    settings_id: "rPI_46_1047_2_b",
-    selector: "div#bottom_container",
-    color: d3.scale.category10(),
-    width: 860,
-    height: 100,
-    day: today,
-    timeProperty: "Time",
-    margin: {
-      top: 20,
-      right: 50,
-      bottom: 30,
-      left: 50
-    },
-    yAxisLabel: "Flow Rate (L/min)",
-    columns: [
-      "sensor0",
-      "sensor1",
-    ],
-
-    yTicks: 1,
 
     data: convert_data_for_day_view(data, config),
 
     defaults: {
       visible: {},
       min_y: 0,
-      max_y: 5,
+      max_y: 3000,
       start_time: 0,
       end_time: 24,
     },
-
-    post_render: function(root) {
-      console.log(root);
-      root.selectAll("g.x path.domain").remove();
-    }
   });
 
 });

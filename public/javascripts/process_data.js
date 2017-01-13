@@ -1,6 +1,6 @@
 // Functions for converting raw sensor data.
 
-function convert_data(data, config) {
+function convert_data_for_day_view(data, config) {
 
   function compareNumbers(a, b) {
     return a - b;
@@ -101,8 +101,6 @@ function convert_data(data, config) {
     entry["Time"] = new Date(entry["Time"] * 1000);
     sorted_results.push(entry);
   });
-
-  // console.log(sorted_results);
 
   return sorted_results;
 }
