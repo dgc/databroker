@@ -6,7 +6,6 @@ var parameters = require('../parameters');
 var sensors = require('./sensors');
 var _ = require('underscore');
 var configuration = require('../configuration');
-var redis = require("redis");
 var csv = require('csv');
 var dateformat = require('dateformat');
 var fs = require('fs');
@@ -16,7 +15,7 @@ var moment = require('moment');
 var async = require('async');
 var calendar = require('calendar');
 
-var redis_client = redis.createClient(null, null, { return_buffers: true });
+var storage = require('../lib/storage.js');
 
 router.param('device_id', parameters.findDevice);
 
@@ -118,7 +117,7 @@ router.get('/', function(req, res) {
     return "status " + key;
   });
   
-  redis_client.mget(status_keys, function (err, status_reports) {
+  storage.mget(status_keys, function (err, status_reports) {
 
     var reports = {};
 
@@ -146,14 +145,14 @@ function get_log_days(device_id, result_func) {
 
   var key_pattern = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] " + device_id;
 
-  redis_client.keys(key_pattern, function (err, keys) {
+  storage.keys(key_pattern, function (err, keys) {
     keys = _.map(keys, function(key) { return key.toString('utf-8'); });
     result_func(err, keys)
   });
 }
 
 function key_exists(key, callback) {
-  redis_client.exists(key, callback);
+  storage.exists(key, callback);
 }
 
 function dateToExcelDate(date) {
@@ -165,9 +164,9 @@ router.get('/:device_id', function(req, res) {
   var device_id = req.device_id;
   var sensor_configuration = configuration.devices[device_id].sensors;
 
-  redis_client.get("status " + device_id, function(err, device_status) {
+  storage.get("status " + device_id, function(err, device_status) {
 
-    redis_client.get("recent " + device_id, function(err, recent_readings) {
+    storage.get("recent " + device_id, function(err, recent_readings) {
 
       var most_recent_readings;
 
@@ -335,7 +334,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
 
   var key_pattern = "thumbnail " + yearString + "-" + monthString + "-[0-9][0-9] " + device_id;
 
-  redis_client.keys(key_pattern, function (err, thumbnail_keys) {
+  storage.keys(key_pattern, function (err, thumbnail_keys) {
 
     thumbnails = {}
 
@@ -408,9 +407,9 @@ router.get('/:device_id/readings2/:date(\\d{4}-\\d{2})', function(req, res) {
 
   var key_pattern = yearString + "-" + monthString + "-[0-9][0-9] " + device_id;
 
-  redis_client.keys(key_pattern, function (err, data_keys) {
+  storage.keys(key_pattern, function (err, data_keys) {
 
-    redis_client.mget(data_keys, function (err, responses) {
+    storage.mget(data_keys, function (err, responses) {
 
       var day_data = {};
 
@@ -466,7 +465,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
   prevDay.setDate(date.getDate() - 1);
   nextDay.setDate(date.getDate() + 1);
 
-  redis_client.exists(image_key, function (err, image_exists) {
+  storage.exists(image_key, function (err, image_exists) {
     res.render('device_day', {
       breadcrumbs: [
         { label: 'Home', uri: '/' },
@@ -509,7 +508,7 @@ router.get('/:device_id/readings2/:date(\\d{4}-\\d{2}-\\d{2})', function(req, re
   prevDay.setDate(date.getDate() - 1);
   nextDay.setDate(date.getDate() + 1);
 
-  redis_client.get(data_key, function(err, data) {
+  storage.get(data_key, function(err, data) {
 
     res.render('device_day2', {
       breadcrumbs: [
@@ -572,8 +571,8 @@ router.get('/:device_id/data.:format?', function (req, res) {
     }
   }
 
-  redis_client.keys(key_pattern, function (err, keys) {
-    redis_client.mget(keys, function (err, readings_sets) {
+  storage.keys(key_pattern, function (err, keys) {
+    storage.mget(keys, function (err, readings_sets) {
 
       res.status(200)
 
@@ -679,7 +678,7 @@ router.get('/:device_id/thumbnails/:date.png', function (req, res) {
 
   var key = "thumbnail " + parsed_date[0] + " " + req.device_id;
 
-  redis_client.get(key, function(err, data) {
+  storage.get(key, function(err, data) {
 
     if (data === null) {
       res.status(404).end();
@@ -702,7 +701,7 @@ router.get('/:device_id/images/:date.png', function (req, res) {
 
   var key = "image " + parsed_date[0] + " " + req.device_id;
 
-  redis_client.get(key, function(err, data) {
+  storage.get(key, function(err, data) {
 
     if (data === null) {
       res.status(404).end();

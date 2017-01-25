@@ -3,8 +3,7 @@
 // Utility to post images
 
 var optparse = require('optparse');
-var redis = require("redis");
-var redis_client = redis.createClient(null, null, { return_buffers: true });
+var storage = require('../lib/storage.js');
 var fs = require('fs');
 var dateFormat = require('dateformat');
 var _ = require('underscore');
@@ -51,7 +50,7 @@ function updateThumbnails(options, callback) {
 
     var configuration = JSON.parse(configuration_text);
 
-    redis_client.keys(pattern, function (err, thumbnail_keys) {
+    storage.keys(pattern, function (err, thumbnail_keys) {
       async.series(_.map(thumbnail_keys, function(key) {
         return function(callback) {
           updateThumbnail(options['device'], key.toString('utf-8').substring(0, 10), configuration, callback);
