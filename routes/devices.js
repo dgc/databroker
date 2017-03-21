@@ -293,7 +293,7 @@ router.get('/:device_id', function(req, res) {
 
 // Month view
 
-router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
+router.get('/:device_id/readings1/:date(\\d{4}-\\d{2})', function(req, res) {
 
   var device_id = req.device_id;
 
@@ -366,7 +366,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
 
 // D3 Month view
 
-router.get('/:device_id/readings2/:date(\\d{4}-\\d{2})', function(req, res) {
+router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
 
   var device_id = req.device_id;
 
@@ -446,7 +446,7 @@ router.get('/:device_id/readings2/:date(\\d{4}-\\d{2})', function(req, res) {
 
 // Day view
 
-router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
+router.get('/:device_id/readings1/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
 
   var device_id = req.device_id;
 
@@ -490,7 +490,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
 
 // D3 Day view
 
-router.get('/:device_id/readings2/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
+router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
 
   var device_id = req.device_id;
 
