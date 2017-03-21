@@ -170,12 +170,12 @@ router.get('/:device_id', function(req, res) {
 
       var most_recent_readings;
 
-      if (device_status !== null) {
+      if (device_status != undefined) {
         device_status = JSON.parse(device_status);
         device_status = device_status[device_status.length - 1];
       }
 
-      if (recent_readings !== null) {
+      if (recent_readings != undefined) {
         recent_readings = JSON.parse(recent_readings);
 
         most_recent_readings = recent_readings.slice(-1)[0];
