@@ -109,11 +109,18 @@ function lineGraph(graphSettings) {
     color.domain(graphSettings.columns);
 
     var readings = graphSettings.columns.map(function(name) {
+
+      var values = convertedData.map(function(d) {
+        return {xValue: d[graphSettings.timeProperty], yValue: +d[name]};
+      })
+
+      values = values.filter(function (value) {
+        return !isNaN(value.yValue);
+      });
+
       return {
         name: name,
-        values: convertedData.map(function(d) {
-          return {xValue: d[graphSettings.timeProperty], yValue: +d[name]};
-        })
+        values: values
       };
     });
 
@@ -124,16 +131,14 @@ function lineGraph(graphSettings) {
 
     var reading = svg.selectAll(".reading")
         .data(readings)
-        .enter().append("g")
-        .attr("class", "reading");
-
-    // Data line
-
-    reading.append("path")
+        .enter()
+        .append("g")
+        .attr("class", "reading")
+        .append("path")
         .attr("class", "line visTarget")
         .attr("id", function(d) { return "path-" + d.name })
         .attr("d", function(d) { return line(d.values); })
-        .style("stroke", function(d) { return color(d.name); });
+        .style("stroke", function(d) { return color(d.name); })
 
     // Axes
 
