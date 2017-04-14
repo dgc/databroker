@@ -1,6 +1,3 @@
 #!/usr/bin/bash
 
 TODAY=$(/usr/bin/date '+%Y-%m-%d')
-
-# /usr/bin/node /home/dgc/databroker/update_thumbnail.js --date $TODAY --device rPI_46_1047_1
-# /usr/bin/node /home/dgc/databroker/update_thumbnail.js --date $TODAY --device rPI_46_1047_2

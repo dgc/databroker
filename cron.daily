@@ -1,6 +1,3 @@
 #!/usr/bin/bash
 
 YESTERDAY=$(/usr/bin/date --date yesterday '+%Y-%m-%d')
-
-/usr/bin/node /home/dgc/databroker/update_thumbnail.js --date $YESTERDAY --device rPI_46_1047_1
-/usr/bin/node /home/dgc/databroker/update_thumbnail.js --date $YESTERDAY --device rPI_46_1047_2

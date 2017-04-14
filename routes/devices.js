@@ -10,7 +10,6 @@ var csv = require('csv');
 var dateformat = require('dateformat');
 var fs = require('fs');
 var archiver = require('archiver');
-var libxmljs = require("libxmljs");
 var moment = require('moment');
 var async = require('async');
 var calendar = require('calendar');
@@ -190,101 +189,27 @@ router.get('/:device_id', function(req, res) {
 
       get_log_days(req.device_id, function (err, days) {
     
-        var thumbnail_keys = _.map(days, function(day) {
-          return "thumbnail " + day;
-        });
-    
         var most_recent_month;
         
         if (days.length > 0) {
           most_recent_month = days.sort()[days.length - 1].substring(0, 7);
         }
     
-        async.map(thumbnail_keys, key_exists, function(err, thumbnail_exists) {
-    
-          var thumbnails = {};
-    
-          _.each(days, function(day, index) {
-            if (thumbnail_exists[index] == 1) {
-              thumbnails[day] = '/devices/' + device_id + '/thumbnails/' + day.substring(0, 10) + '.png';
-            }
-          });
-    
-          readings = _.map(days.sort(), function(day) {
-            return ["/devices/" + device_id + "/data.csv?day=" + day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10), day.substring(0, 10)];
-          });
-    
-          var readings = _.groupBy(readings, function(day) {
-            return day[1].substring(0, 7);
-          });
-    
-          days = _.map(days, function(day) {
-    
-            var date = moment(day.substring(0, 10));
-            var date_string = day.substring(0, 4) + day.substring(5, 7) + day.substring(8, 10);
-    
-            // Day adjustment, starting from Sunday to get to Monday.
-            var day_adjust = [-6, 0, -1, -2, -3, -4, -5];
-    
-            var days_since_sunday = date.day();
-            var days_since_monday = (days_since_sunday + 6) % 7;
-            var start_of_week = date.clone().add(day_adjust[days_since_sunday], 'days');
-            var label = date.format("DD MMM");
-    
-            var csv_url = "/devices/" + device_id + "/data.csv?day=" + date_string;
-    
-            var day_metadata = {
-              key: day,
-              thumbnail: thumbnails[day],
-              date: date,
-              monday: start_of_week,
-              label: label,
-              dow: days_since_monday,
-              csv: csv_url
-            };
-    
-            return day_metadata;
-          })
-    
-          var calendar = _.groupBy(days, function(day) {
-            return day.monday;
-          });
-    
-          calendar = _.map(calendar, function(days, sow) {
-            week = [];
-            _.each(days, function(day) {
-              week[day.dow] = day;
-            });
-            return [sow, week, false];
-          });
-    
-          _.each(calendar, function(week, i) {
-            if (i > 0) {
-              var diff = moment(calendar[i][0]) - moment(calendar[i - 1][0]);
-    
-              if (diff > (((7 * 24) + 1) * 60 * 60 * 1000))
-                week[2] = true;
-            }
-          });
-    
-          res.render('device', {
-            breadcrumbs: [
-              { label: 'Home', uri: '/' },
-              { label: 'Devices', uri: '/devices' },
-              { label: configuration.devices[device_id].label }
-            ],
-            configuration: configuration,
-            device_label: configuration.devices[req.device_id].label,
-            readings: readings,
-            calendar: calendar,
-            sensors: configuration.devices[device_id].sensors,
-            most_recent_readings: most_recent_readings,
-            device: configuration.devices[device_id],
-            device_id: device_id,
-            device_status: device_status,
-            dateformat: dateformat,
-            most_recent_month: most_recent_month
-          });
+        res.render('device', {
+          breadcrumbs: [
+            { label: 'Home', uri: '/' },
+            { label: 'Devices', uri: '/devices' },
+            { label: configuration.devices[device_id].label }
+          ],
+          configuration: configuration,
+          device_label: configuration.devices[req.device_id].label,
+          sensors: configuration.devices[device_id].sensors,
+          most_recent_readings: most_recent_readings,
+          device: configuration.devices[device_id],
+          device_id: device_id,
+          device_status: device_status,
+          dateformat: dateformat,
+          most_recent_month: most_recent_month
         });
       });
     });
@@ -292,79 +217,6 @@ router.get('/:device_id', function(req, res) {
 });
 
 // Month view
-
-router.get('/:device_id/readings1/:date(\\d{4}-\\d{2})', function(req, res) {
-
-  var device_id = req.device_id;
-
-  var yearString  = req.params.date.substring(0, 4);
-  var monthString = req.params.date.substring(5, 7);
-
-  var year  = parseInt(yearString);
-  var month = parseInt(monthString);
-
-  var cal = new calendar.Calendar(1).monthDays(year, month - 1);
-
-  cal = _.map(cal, function(week) {
-    return _.map(week, function(day) {
-      if (day == 0) {
-        return undefined;
-      } else {
-        return new Date(yearString + "-" + monthString + "-" + (('0' + day).slice(-2)));
-      }
-    });
-  });
-
-  var date      = new Date(yearString + "-" + monthString + "-01");
-  var prevMonth = new Date(yearString + "-" + monthString + "-01");
-  var nextMonth = new Date(yearString + "-" + monthString + "-01");
-
-  if (date.getMonth() == 0) {
-    prevMonth.setMonth(11);
-    prevMonth.setFullYear(date.getFullYear() - 1);
-    nextMonth.setMonth(1);
-  } else if (date.getMonth() == 11) {
-    prevMonth.setMonth(10);
-    nextMonth.setMonth(0);
-    nextMonth.setFullYear(date.getFullYear() + 1);
-  } else {
-    prevMonth.setMonth(date.getMonth() - 1);
-    nextMonth.setMonth(date.getMonth() + 1);
-  }
-
-  var key_pattern = "thumbnail " + yearString + "-" + monthString + "-[0-9][0-9] " + device_id;
-
-  storage.keys(key_pattern, function (err, thumbnail_keys) {
-
-    thumbnails = {}
-
-    _.each(thumbnail_keys, function(key) {
-      var thumbnail_date = key.toString('utf-8').substring(10, 20);
-      thumbnails[thumbnail_date] = '/devices/' + device_id + '/thumbnails/' + thumbnail_date + '.png';
-    });
-
-    res.render('device_month', {
-      breadcrumbs: [
-        { label: 'Home', uri: '/' },
-        { label: 'Devices', uri: '/devices' },
-        { label: configuration.devices[device_id].label, uri: '/devices/' + device_id },
-        { label: dateformat(date, "mmmm yyyy") }
-      ],
-      device_id: device_id,
-      device_label: configuration.devices[req.device_id].label,
-      year: year,
-      month: month,
-      calendar: cal,
-      date: date,
-      dateformat: dateformat,
-      thumbnails: thumbnails,
-      prev_month: prevMonth,
-      next_month: nextMonth
-    });
-  });
-});
-
-// D3 Month view
 
 router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
 
@@ -421,7 +273,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
         day_data[data_date] = month_view_data(configuration.devices[device_id], JSON.parse(responses[i]));
       }
 
-      res.render('device_month2', {
+      res.render('device_month', {
         breadcrumbs: [
           { label: 'Home', uri: '/' },
           { label: 'Devices', uri: '/devices' },
@@ -446,50 +298,6 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
 
 // Day view
 
-router.get('/:device_id/readings1/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
-
-  var device_id = req.device_id;
-
-  var year  = req.params.date.substring(0, 4);
-  var month = req.params.date.substring(5, 7);
-  var day   = req.params.date.substring(8, 10);
-
-  var image_key = "image " + year + "-" + month + "-" + day + " " + device_id;
-  var image_uri = "/devices/" + device_id + "/images/" + year + "-" + month + "-" + day + ".png";
-
-  var date = new Date(year + "-" + month + "-" + day);
-
-  var nextDay = new Date(date);
-  var prevDay = new Date(date);
-
-  prevDay.setDate(date.getDate() - 1);
-  nextDay.setDate(date.getDate() + 1);
-
-  storage.exists(image_key, function (err, image_exists) {
-    res.render('device_day', {
-      breadcrumbs: [
-        { label: 'Home', uri: '/' },
-        { label: 'Devices', uri: '/devices' },
-        { label: configuration.devices[device_id].label, uri: '/devices/' + device_id },
-        { label: dateformat(date, "mmmm yyyy"), uri: year + "-" + month },
-        { label: dateformat(date, "d") }
-      ],
-      device_id: device_id,
-      device_label: configuration.devices[req.device_id].label,
-      year: year,
-      month: month,
-      day: day,
-      date: date,
-      dateformat: dateformat,
-      next_day: nextDay,
-      prev_day: prevDay,
-      image_uri: image_exists ? image_uri : undefined
-    });
-  });
-});
-
-// D3 Day view
-
 router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
 
   var device_id = req.device_id;
@@ -510,7 +318,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
 
   storage.get(data_key, function(err, data) {
 
-    res.render('device_day2', {
+    res.render('device_day', {
       breadcrumbs: [
         { label: 'Home', uri: '/' },
         { label: 'Devices', uri: '/devices' },
@@ -668,29 +476,6 @@ router.get('/:device_id/data.:format?', function (req, res) {
   });
 });
 
-router.get('/:device_id/thumbnails/:date.png', function (req, res) {
-  var parsed_date = req.params.date.match(/^\d\d\d\d-\d\d-\d\d/)
-
-  if (parsed_date === null) {
-    res.status(404).end();
-    return;
-  }
-
-  var key = "thumbnail " + parsed_date[0] + " " + req.device_id;
-
-  storage.get(key, function(err, data) {
-
-    if (data === null) {
-      res.status(404).end();
-      return;
-    }
-
-    res.header("Content-Type", "image/png");
-    res.write(data, 'binary');
-    res.end();
-  });
-});
-
 router.get('/:device_id/images/:date.png', function (req, res) {
   var parsed_date = req.params.date.match(/^\d\d\d\d-\d\d-\d\d/)
 
@@ -712,23 +497,6 @@ router.get('/:device_id/images/:date.png', function (req, res) {
     res.write(data, 'binary');
     res.end();
   });
-});
-
-router.get('/:device_id/gnuplot/:gnuplot.gnu', function (req, res) {
-
-  var gnuplot = req.params.gnuplot;
-
-  if ((gnuplot == 'image') || (gnuplot == 'thumbnail')) {
-
-    var filename = "graphs/" + req.device_id + "_" + gnuplot + ".gnu";
-    
-    fs.readFile(filename, function (err, data) {
-
-      res.header("Content-Type", "text/plain");
-      res.write(data, 'binary');
-      res.end();
-    });
-  }
 });
 
 module.exports = router;

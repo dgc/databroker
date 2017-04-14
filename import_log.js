@@ -122,17 +122,6 @@ function processLog(options, callback) {
       }), function (err, results) {
         callback();
       });
-
-//    redis_client.keys(pattern, function (err, thumbnail_keys) {
-//      async.series(_.map(thumbnail_keys, function(key) {
-//        return function(callback) {
-//          updateThumbnail(options['device'], key.toString('utf-8').substring(0, 10), configuration, callback);
-//        }
-//      }), function(err, results) {
-//        callback(err);
-//      });
-//    });
-
     });
   });
 }
