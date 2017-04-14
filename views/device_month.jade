@@ -1,5 +1,8 @@
 extends layout
 
+block head
+  script(type="text/ecmascript", src="/javascripts/" + device_id + "_month.js")
+
 block content
   h1= device_label
 
@@ -12,6 +15,9 @@ block content
     span.nav_arrow  &#9654;
 
   div.nav_center= dateformat(date, "mmmm yyyy")
+
+  script!= device_configuration
+  script!= "month_data = " + day_data
 
   table.calendar_month
 
@@ -30,13 +36,10 @@ block content
           if day == undefined
             td.invalid
           else
-            td
+            td(id=dateformat(day, 'yyyy-mm-dd'))
               div.label= dateformat(day, "dd")
-              if thumbnails[dateformat(day, "yyyy-mm-dd")]
-                a(href=dateformat(day, 'yyyy-mm-dd'))
-                  img(width=125 height=75 src=thumbnails[dateformat(day, "yyyy-mm-dd")])
-              else
-                div.no_data
+              a(href=dateformat(day, 'yyyy-mm-dd'))
+                div.day_data(id="day-" + dateformat(day, 'yyyy-mm-dd'))
               div.download
                 span.csv
                   a(href="../data.csv?day=#{dateformat(day, 'yyyymmdd')}") CSV

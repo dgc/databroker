@@ -10,7 +10,6 @@ var csv = require('csv');
 var dateformat = require('dateformat');
 var fs = require('fs');
 var archiver = require('archiver');
-var libxmljs = require("libxmljs");
 var moment = require('moment');
 var async = require('async');
 var calendar = require('calendar');
@@ -421,7 +420,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
         day_data[data_date] = month_view_data(configuration.devices[device_id], JSON.parse(responses[i]));
       }
 
-      res.render('device_month2', {
+      res.render('device_month', {
         breadcrumbs: [
           { label: 'Home', uri: '/' },
           { label: 'Devices', uri: '/devices' },
@@ -510,7 +509,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
 
   storage.get(data_key, function(err, data) {
 
-    res.render('device_day2', {
+    res.render('device_day', {
       breadcrumbs: [
         { label: 'Home', uri: '/' },
         { label: 'Devices', uri: '/devices' },
@@ -712,23 +711,6 @@ router.get('/:device_id/images/:date.png', function (req, res) {
     res.write(data, 'binary');
     res.end();
   });
-});
-
-router.get('/:device_id/gnuplot/:gnuplot.gnu', function (req, res) {
-
-  var gnuplot = req.params.gnuplot;
-
-  if ((gnuplot == 'image') || (gnuplot == 'thumbnail')) {
-
-    var filename = "graphs/" + req.device_id + "_" + gnuplot + ".gnu";
-    
-    fs.readFile(filename, function (err, data) {
-
-      res.header("Content-Type", "text/plain");
-      res.write(data, 'binary');
-      res.end();
-    });
-  }
 });
 
 module.exports = router;
