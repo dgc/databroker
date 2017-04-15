@@ -40,7 +40,3 @@ block content
               div.label= dateformat(day, "dd")
               a(href=dateformat(day, 'yyyy-mm-dd'))
                 div.day_data(id="day-" + dateformat(day, 'yyyy-mm-dd'))
-              div.download
-                span.csv
-                  a(href="../data.csv?day=#{dateformat(day, 'yyyymmdd')}") CSV
-
