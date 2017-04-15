@@ -2,7 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
-var parameters = require('../parameters');
+var parameters = require('../lib/parameters');
 var _ = require('underscore');
 
 router.param('sensor_id', parameters.findSensor);

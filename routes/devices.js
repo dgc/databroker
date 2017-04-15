@@ -2,10 +2,10 @@
 
 var express = require('express');
 var router = express.Router();
-var parameters = require('../parameters');
+var parameters = require('../lib/parameters');
 var sensors = require('./sensors');
 var _ = require('underscore');
-var configuration = require('../configuration');
+var configuration = require('../lib/configuration');
 var csv = require('csv');
 var dateformat = require('dateformat');
 var fs = require('fs');
