@@ -1,5 +1,12 @@
+// From: http://stackoverflow.com/a/9050354
 
-$('window').ready(function() {
+if (!Array.prototype.last) {
+  Array.prototype.last = function () {
+    return this[this.length - 1];
+  };
+};
+
+$('window').ready(function () {
 
   Object.keys(month_data).forEach(function (key) {
 
@@ -26,43 +33,80 @@ $('window').ready(function() {
       });
     });
 
-    var margin = {top: 0, right: 0, bottom: 0, left: 0},
-        width = 125 - margin.left - margin.right,
-        height = 75 - margin.top - margin.bottom;
+    // Split lines with missing chunks
+
+    var splitReadings = [];
+
+    columns.forEach(function (column) {
+
+      var name = column;
+      var values = data2[column];
+
+      var gap = true;
+      var lastTimestamp = undefined;
+
+      for (var i = 0; i < values.length; i++) {
+
+        if (lastTimestamp != undefined) {
+          if (values[i] != undefined) {
+            var diff = values[i].x - lastTimestamp;
+
+            if (diff > (90 * 5)) {
+              gap = true;
+            }
+          }
+        }
+
+        if (values[i] == undefined) {
+          gap = true;
+        } else {
+          if (gap) {
+            splitReadings.push({ name: name, values: []});
+          }
+
+          splitReadings.last().values.push(values[i]);
+          lastTimestamp = values[i].x;
+          gap = false;
+        }
+      }
+    });
+
+    var margin = { top: 0, right: 0, bottom: 0, left: 0 },
+      width = 125 - margin.left - margin.right,
+      height = 75 - margin.top - margin.bottom;
 
     var start_time = Date.parse(key) / 1000;
     var end_time = start_time + 86400;
 
     var x = d3.scale.linear()
-        .domain([start_time, end_time])
-        .range([0, width]);
+      .domain([start_time, end_time])
+      .range([0, width]);
 
     var y = d3.scale.linear()
-        .domain([17000, 23000])
-        .range([height, 0]);
+      .domain([17000, 23000])
+      .range([height, 0]);
 
     var color = d3.scale.category10();
     color.domain(columns);
 
     var area = d3.svg.area()
-        .x(function(d) { return x(d.x); })
-        .y0(function(d) { return y(d.h); })
-        .y1(function(d) { return y(d.l); });
+      .x(function (d) { return x(d.x); })
+      .y0(function (d) { return y(d.h); })
+      .y1(function (d) { return y(d.l); });
 
     var svg = d3.select('#day-' + key).append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
       .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    columns.forEach(function (column) {
+    splitReadings.forEach(function (segment) {
       svg.append("path")
-          .datum(data2[column])
-          .style("stroke", function(d) { return color(column); })
-          .style("fill", function(d) { return color(column); })
-          .attr("class", "area")
-          .attr("d", area);
+        .datum(segment.values)
+        .style("stroke", function (d) { return color(segment.name); })
+        .style("fill", function (d) { return color(segment.name); })
+        .attr("class", "area")
+        .attr("d", area);
     });
   });
 });
-
