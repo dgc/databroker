@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-
-YESTERDAY=$(/usr/bin/date --date yesterday '+%Y-%m-%d')
