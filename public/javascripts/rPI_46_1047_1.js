@@ -124,8 +124,6 @@ function lineGraph(graphSettings) {
       };
     });
 
-    // x.domain(d3.extent(convertedData, function(d) { return d[graphSettings.timeProperty]; }));
-
     x.domain([start_time, end_time]);
     y.domain([settings.min_y, settings.max_y]);
 
@@ -154,7 +152,7 @@ function lineGraph(graphSettings) {
           gap = true;
         } else {
           if (gap) {
-            splitReadings.push({ name: sensorReadings.name, values: []});
+            splitReadings.push({ name: sensorReadings.name, values: [] });
           }
 
           splitReadings.last().values.push(sensorReadings.values[i]);
@@ -169,7 +167,9 @@ function lineGraph(graphSettings) {
     var reading = svg.selectAll(".reading")
       .data(splitReadings)
       .enter()
-      .append("g")
+      .append("svg")
+      .attr("style", "overflow: hidden")
+      .attr("height", height)
       .attr("class", "reading")
       .append("path")
       .attr("class", function (d) { return "line visTarget path-" + d.name; })
@@ -307,7 +307,10 @@ function lineGraph(graphSettings) {
       legendKeys.selectAll("*").remove();
 
       var readings = graphSettings.columns.map(function (name) {
-        legendKeys.append("div").html("<label><span style='color: " + graphSettings.color(name) + "'>&#9632;</span> <input type='checkbox' id='vis-" + name + "'> " + config.sensors[name].label + "</label>");
+        legendKeys.append("div").html("<label><span style='color: " +
+          graphSettings.color(name) +
+          "'>&#9632;</span> <input type='checkbox' id='vis-" + name +
+          "'> " + config.sensors[name].label + "</label>");
       });
 
       legendKeys.selectAll("input")
@@ -388,6 +391,4 @@ $('window').ready(function () {
       end_time: 24,
     },
   });
-
 });
-
