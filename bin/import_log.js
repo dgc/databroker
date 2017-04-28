@@ -3,8 +3,7 @@
 // Utility to import logs
 
 var optparse = require('optparse');
-var redis = require("redis");
-var redis_client = redis.createClient(null, null, { return_buffers: true });
+var storage = require('../lib/storage.js');
 var fs = require('fs');
 var dateFormat = require('dateformat');
 var _ = require('underscore');
@@ -66,6 +65,7 @@ function processLog(options, callback) {
       for (i in import_lines) {
 
         try {
+          console.log(import_lines[i]);
           var data = JSON.parse(import_lines[i]);
 
           var date = new Date(parseInt(data['timestamp'], 10) * 1000);
@@ -81,7 +81,7 @@ function processLog(options, callback) {
           days[base].push(data);
 
         } catch (err) {
-          //console.log(err);
+          console.log(err);
         }
       }
 
@@ -89,9 +89,9 @@ function processLog(options, callback) {
         return function(callback) {
           var key = base + " " + options['device'];
 
-          redis_client.get(key, function(err, entries) {
+          storage.get(key, function(err, entries) {
 
-            if (entries === null) {
+            if (entries === undefined) {
               entries = [];
             } else {
               entries = JSON.parse(entries);
@@ -115,7 +115,7 @@ function processLog(options, callback) {
               return a["timestamp"] - b["timestamp"];
             });
 
-            redis_client.set(key, JSON.stringify(entries));
+            storage.set(key, JSON.stringify(entries));
             callback(err);
           });
         };
