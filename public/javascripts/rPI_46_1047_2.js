@@ -325,7 +325,7 @@ function lineGraph(graphSettings) {
         settings[key] = defaults[key];
       }
 
-      // d3.select(graphSettings.selector + " #" + key).node().value = settings[key];
+      d3.select(graphSettings.selector + " #" + key).node().value = settings[key];
     });
 
     graphSettings.columns.forEach(function (id) {
