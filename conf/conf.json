@@ -251,6 +251,7 @@
       },
 
       "tags": {
+       "decommissioned" : { },
        "no reports" : { }
       }
     },
