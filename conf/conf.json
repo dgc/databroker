@@ -311,6 +311,38 @@
     }
   },
 
+  "views" : {
+
+    "test": { 
+
+      "label": "Test View",
+
+      "graphs": [
+
+        {
+          "title": "Test Graph 1",
+  
+          "sensors": [
+
+            { "device": "rPI_46_1047_1", "sensor": "10-000802b44f21" },
+            { "device": "rPI_46_1047_1", "sensor": "10-000802b49201" },
+            { "device": "rPI_46_1047_2", "sensor": "28-000006dd5bbd" }
+          ]
+        },
+
+        {
+          "title": "Test Graph 2",
+  
+          "sensors": [
+
+            { "device": "rPI_46_1047_1", "sensor": "10-000802b42b40" },
+            { "device": "rPI_46_1047_2", "sensor": "28-000006ddbe63" }
+          ]
+        }
+      ]
+    }
+  },
+
   "people" : {
 
     "dgc" : {

@@ -17,6 +17,7 @@ var calendar = require('calendar');
 var storage = require('../lib/storage.js');
 
 router.param('device_id', parameters.findDevice);
+router.param('view_id', parameters.findView);
 
 router.use('/:device_id/sensors/', sensors);
 
@@ -296,6 +297,128 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
   });
 });
 
+router.get('/views/:view_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
+
+  var view_id = req.view_id;
+
+  var yearString  = req.params.date.substring(0, 4);
+  var monthString = req.params.date.substring(5, 7);
+
+  var year  = parseInt(yearString);
+  var month = parseInt(monthString);
+
+  var cal = new calendar.Calendar(1).monthDays(year, month - 1);
+
+  cal = _.map(cal, function(week) {
+    return _.map(week, function(day) {
+      if (day == 0) {
+        return undefined;
+      } else {
+        return new Date(yearString + "-" + monthString + "-" + (('0' + day).slice(-2)));
+      }
+    });
+  });
+
+  var date      = new Date(yearString + "-" + monthString + "-01");
+  var prevMonth = new Date(yearString + "-" + monthString + "-01");
+  var nextMonth = new Date(yearString + "-" + monthString + "-01");
+
+  if (date.getMonth() == 0) {
+    prevMonth.setMonth(11);
+    prevMonth.setFullYear(date.getFullYear() - 1);
+    nextMonth.setMonth(1);
+  } else if (date.getMonth() == 11) {
+    prevMonth.setMonth(10);
+    nextMonth.setMonth(0);
+    nextMonth.setFullYear(date.getFullYear() + 1);
+  } else {
+    prevMonth.setMonth(date.getMonth() - 1);
+    nextMonth.setMonth(date.getMonth() + 1);
+  }
+
+  var devices = {};
+
+  _.each(configuration.views[view_id].graphs, function(view) {
+    _.each(view.sensors, function(sensor) {
+
+      if (devices[sensor.device] === undefined) {
+        devices[sensor.device] = [];
+      }
+
+      devices[sensor.device].push(sensor.sensor);
+    });
+  });
+
+  key_patterns = [];
+
+  var device_configurations = {};
+
+  _.each(Object.keys(devices), function(device_id) {
+    device_configurations[device_id] = configuration.devices[device_id];
+    key_patterns.push(yearString + "-" + monthString + "-[0-9][0-9] " + device_id);
+  });
+
+  async.map(Object.keys(devices), function (device_id, callback) {
+
+    var key_pattern = yearString + "-" + monthString + "-[0-9][0-9] " + device_id;
+
+    storage.keys(key_pattern, function (err, data_keys) {
+
+      storage.mget(data_keys, function (err, responses) {
+  
+        var day_data = {};
+  
+        for (var i = 0; i < data_keys.length; i++) {
+  
+          var data_key = data_keys[i];
+          var data_date = data_key.toString('utf-8').substring(0, 10);
+  
+          day_data[data_date] = month_view_data(configuration.devices[device_id], JSON.parse(responses[i]));
+        }
+
+        callback(null, { "device" : device_id, "day_data" : day_data });
+      });
+    });
+
+  }, function (err, day_data) {
+
+    res.render('view_month', {
+      breadcrumbs: [
+        { label: 'Home', uri: '/' },
+        { label: 'Views', uri: '/views' },
+//          { label: configuration.devices[device_id].label, uri: '/devices/' + device_id },
+        { label: dateformat(date, "mmmm yyyy") }
+      ],
+      view_id: view_id,
+      view_label: configuration.views[view_id].label,
+      device_configurations: "var device_config = " + JSON.stringify(device_configurations) + ";",
+      view_configuration: "var view_config = " + JSON.stringify(configuration.views[view_id]) + ";",
+      year: year,
+      month: month,
+      calendar: cal,
+      date: date,
+      dateformat: dateformat,
+      day_data: JSON.stringify(day_data),
+      prev_month: prevMonth,
+      next_month: nextMonth
+    });
+  });
+
+/*
+
+    storage.mget(data_keys, function (err, responses) {
+
+      var day_data = {};
+
+      for (var i = 0; i < data_keys.length; i++) {
+
+        var data_key = data_keys[i];
+        var data_date = data_key.toString('utf-8').substring(0, 10);
+
+        day_data[data_date] = month_view_data(configuration.devices[device_id], JSON.parse(responses[i]));
+      }
+*/
+});
 // Day view
 
 router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res) {
