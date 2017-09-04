@@ -10,45 +10,46 @@ function convert_data_for_day_view(data, config) {
     return Math.floor((s + 30) / 60) * 60;
   }
 
-  function set_second_value(results, timestamp, sensor_id, value) {
-
-    var minute = closest_minute(timestamp);
-
-    if (results[timestamp] == undefined) {
-      results[timestamp] = { Time: timestamp };
-    }
-
-    results[timestamp][sensor_id] = value;
+  function closest_hour(s) {
+    return Math.floor((s + 1800) / 3600) * 3600;
   }
 
-  function set_minute_value(results, timestamp, sensor_id, value) {
+  function set_value(results, timestamp, sensor_id, value, period) {
 
-    var minute = closest_minute(timestamp);
-
-    if (results[minute] == undefined) {
-      results[minute] = { Time: minute };
+    var time;
+    
+    switch (period) {
+      case "minute": time = closest_minute(timestamp); break;
+      case "hour": time = closest_hour(timestamp); break;
+      default: throw "Unknown period unit: " + period;
     }
 
-    results[minute][sensor_id] = value;
+    if (results[time] == undefined) {
+      results[time] = { Time: time };
+    }
+
+    results[time][sensor_id] = value;
   }
 
   var results = {};
 
   Object.keys(config.sensors).forEach(function (sensor_id) {
 
-    switch (config.sensors[sensor_id].sensor_model) {
+    var sensor_config = config.sensors[sensor_id];
+
+    switch (sensor_config.sensor_model) {
 
       case "RHT03":
       case "DS18B20": {
         data.forEach(function (entry) {
-          set_minute_value(results, entry["timestamp"], sensor_id, entry[sensor_id] / 1000);
+          set_value(results, entry["timestamp"], sensor_id, entry[sensor_id] / 1000, sensor_config.period_unit);
         });
       }
       break;
 
       case "YF-S201": {
         data.forEach(function (entry) {
-          set_minute_value(results, entry["timestamp"], sensor_id, entry[sensor_id] / (60 * 7.5));
+          set_value(results, entry["timestamp"], sensor_id, entry[sensor_id] / (60 * 7.5), sensor_config.period_unit);
         });
       }
       break;
@@ -78,7 +79,7 @@ function convert_data_for_day_view(data, config) {
 
           var watts = msg.substring(wattsOpen + 7, wattsClose);
 
-          set_minute_value(results, entry["timestamp"], sensor_id, parseInt(watts));
+          set_value(results, entry["timestamp"], sensor_id, parseInt(watts), sensor_config.period_unit);
         });
       }
       break;
