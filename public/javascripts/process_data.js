@@ -21,7 +21,7 @@ function convert_data_for_day_view(data, config) {
     switch (period) {
       case "minute": time = closest_minute(timestamp); break;
       case "hour": time = closest_hour(timestamp); break;
-      default: throw "Unknown period unit: " + period;
+      default: throw "Unknown period unit (" + period + ") for sensor: " + sensor_id;
     }
 
     if (results[time] == undefined) {

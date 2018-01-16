@@ -28,11 +28,11 @@
       "label": "Power meters in 30:4007",
 
       "sensors": {
-        "sensor_1": { "label": "Power Meter 1", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
-        "sensor_2": { "label": "Power Meter 2", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
-        "sensor_3": { "label": "Power Meter 3", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "3", "units_label": "Watts" },
-        "sensor_4": { "label": "Power Meter 4", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "4", "units_label": "Watts" },
-        "sensor_5": { "label": "Power Meter 5", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "5", "units_label": "Watts" }
+        "sensor_1": { "label": "Power Meter 1", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts", "period_unit": "minute" },
+        "sensor_2": { "label": "Power Meter 2", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts", "period_unit": "minute" },
+        "sensor_3": { "label": "Power Meter 3", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "3", "units_label": "Watts", "period_unit": "minute" },
+        "sensor_4": { "label": "Power Meter 4", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "4", "units_label": "Watts", "period_unit": "minute" },
+        "sensor_5": { "label": "Power Meter 5", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "5", "units_label": "Watts", "period_unit": "minute" }
       },
 
       "tags": {
@@ -56,8 +56,8 @@
       "label": "Power meters in 30:1069",
 
       "sensors": {
-        "1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
-        "2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" }
+        "1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts", "period_unit": "minute" },
+        "2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts", "period_unit": "minute" }
       },
 
       "tags": {
@@ -82,9 +82,9 @@
       "label": "Raspberry Pi in 30:1071",
 
       "sensors": {
-        "1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
-        "2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
-        "9": { "label": "Oven in 30:1013",        "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "9", "units_label": "Watts" }
+        "1": { "label": "Don's desktop computer", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts", "period_unit": "minute" },
+        "2": { "label": "Kettle in 30:1069",      "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts", "period_unit": "minute" },
+        "9": { "label": "Oven in 30:1013",        "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "9", "units_label": "Watts", "period_unit": "minute" }
       },
 
       "tags": {
@@ -143,7 +143,7 @@
         "28-000006ddbe63": { "label": "Spitfire water temperature", "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
         "28-00000722cf9d": { "label": "Chiller room",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
         "28-000007486f53": { "label": "Gas cupboard",               "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
-        "28-000007659998": { "label": "BL1 Chamber",                "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius" },
+        "28-000007659998": { "label": "BL1 Chamber",                "type": "temperature", "sensor_model": "DS18B20", "units_label": "Celcius", "period": 1, "period_unit": "minute" },
 
         "sensor0": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions", "period": 1, "period_unit": "minute" },
         "sensor1": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions", "period": 1, "period_unit": "minute" }
@@ -168,12 +168,12 @@
       "label": "Power Consumption in Xray lab",
 
       "sensors": {
-        "1": { "label": "Evo Chiller",              "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts" },
-        "2": { "label": "Spitfire Chiller",         "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts" },
-        "3": { "label": "Tsunami Chiller",          "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "3", "units_label": "Watts" },
-        "4": { "label": "BL1 Andor PSU",            "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "4", "units_label": "Watts" },
-        "5": { "label": "BL1 Chamber Backing Pump", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "5", "units_label": "Watts" },
-        "6": { "label": "BL2 Chamber Backing Pump", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "6", "units_label": "Watts" }
+        "1": { "label": "Evo Chiller",              "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "1", "units_label": "Watts", "period_unit": "minute" },
+        "2": { "label": "Spitfire Chiller",         "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "2", "units_label": "Watts", "period_unit": "minute" },
+        "3": { "label": "Tsunami Chiller",          "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "3", "units_label": "Watts", "period_unit": "minute" },
+        "4": { "label": "BL1 Andor PSU",            "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "4", "units_label": "Watts", "period_unit": "minute" },
+        "5": { "label": "BL1 Chamber Backing Pump", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "5", "units_label": "Watts", "period_unit": "minute" },
+        "6": { "label": "BL2 Chamber Backing Pump", "type": "power", "sensor_model":"CurrentCostTIAM", "sensor": "6", "units_label": "Watts", "period_unit": "minute" }
       },
 
       "tags": {
@@ -221,8 +221,8 @@
 
       "sensors": {
 
-        "D2": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" },
-        "D3": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions" }
+        "D2": { "label": "Spitfire chiller",  "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions", "period_unit": "minute" },
+        "D3": { "label": "Evolution chiller", "type": "flow", "sensor_model":"YF-S201", "units_label": "Revolutions", "period_unit": "minute" }
       },
 
       "tags": {
@@ -245,9 +245,9 @@
 
       "sensors": {
 
-        "A0": { "label": "Temperature sensor", "type": "temperature", "sensor_model":"FIXME", "units_label": "Celcius" },
-        "A1": { "label": "Mira", "type": "power", "sensor_model":"Voltage", "units_label": "Voltage" },
-        "A2": { "label": "Photoreceiver", "type": "photoreceiver", "sensor_model":"Voltage", "units_label": "Voltage" }
+        "A0": { "label": "Temperature sensor", "type": "temperature", "sensor_model":"FIXME", "units_label": "Celcius", "period_unit": "minute" },
+        "A1": { "label": "Mira", "type": "power", "sensor_model":"Voltage", "units_label": "Voltage", "period_unit": "minute" },
+        "A2": { "label": "Photoreceiver", "type": "photoreceiver", "sensor_model":"Voltage", "units_label": "Voltage", "period_unit": "minute" }
       },
 
       "tags": {
@@ -271,8 +271,8 @@
       "sensors": {
 
         "A1" : { "label": "Light level" },
-        "A2" : { "label": "Visible Femtowatt Photoreceiver", "units_label": "Watts" },
-        "DHT_TEMP" : { "label": "DHT Temperature", "units_label": "Celcius" },
+        "A2" : { "label": "Visible Femtowatt Photoreceiver", "units_label": "Watts", "period_unit": "minute" },
+        "DHT_TEMP" : { "label": "DHT Temperature", "units_label": "Celcius", "period_unit": "minute" },
         "DHT_HUMIDITY" : { "label": "DHT Humidity" }
       },
 
