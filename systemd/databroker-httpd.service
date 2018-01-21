@@ -1,0 +1,14 @@
+[Unit]
+Description=DataBroker Web Server
+After=network.target
+
+[Service]
+User=dgc
+WorkingDirectory=/home/dgc/databroker
+ExecStart=/usr/bin/node /home/dgc/databroker/bin/www
+Restart=always
+RestartSec=60
+StartLimitIntervalSec=0
+
+[Install]
+WantedBy=multi-user.target

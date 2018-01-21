@@ -9,12 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var devices = require('./routes/devices');
 
-var store_readings_and_status = require('./lib/store_readings_and_status');
-
 var configuration = require('./lib/configuration');
-
-// Store readings and status messages
-store_readings_and_status();
 
 var app = express();
 

@@ -1,0 +1,14 @@
+[Unit]
+Description=DataBroker Storage Agent
+After=network.target
+
+[Service]
+User=dgc
+WorkingDirectory=/home/dgc/databroker
+ExecStart=/usr/bin/node /home/dgc/databroker/bin/store_readings_and_status.js
+Restart=always
+RestartSec=30
+StartLimitIntervalSec=0
+
+[Install]
+WantedBy=multi-user.target
