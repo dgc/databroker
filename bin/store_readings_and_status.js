@@ -73,34 +73,36 @@ fs.readFile('conf/conf.json', 'utf8', function (err, configuration_text) {
   
         var day_key = base + " " + topic;
 
-        var entry = storage.getSync(day_key);
-  
-        if (entry == null) {
-          entry = [];
-        } else {
-          entry = JSON.parse(entry);
-        }
-  
-        entry.push(data);
-  
-        storage.set(day_key, JSON.stringify(entry));
-  
-        var most_recent_entries = storage.getSync(most_recent_key);
-  
-        if (most_recent_entries == null) {
-          most_recent_entries = [];
-        } else {
-          most_recent_entries = JSON.parse(most_recent_entries);
-        }
-  
-        most_recent_entries.push(data);
-  
-        // Choose to keep the most recent 10. This might need to change or
-        // at least be configurable.
-  
-        most_recent_entries = most_recent_entries.slice(-10);
-  
-        storage.set(most_recent_key, JSON.stringify(most_recent_entries));
+	storage.get(day_key, function (error, entry) {
+
+          if (entry == null) {
+            entry = [];
+          } else {
+            entry = JSON.parse(entry);
+          }
+    
+          entry.push(data);
+    
+          storage.set(day_key, JSON.stringify(entry));
+    
+          storage.get(most_recent_key, function (error, most_recent_entries) {
+    
+            if (most_recent_entries == null) {
+              most_recent_entries = [];
+            } else {
+              most_recent_entries = JSON.parse(most_recent_entries);
+            }
+      
+            most_recent_entries.push(data);
+      
+            // Choose to keep the most recent 10. This might need to change or
+            // at least be configurable.
+      
+            most_recent_entries = most_recent_entries.slice(-10);
+      
+            storage.set(most_recent_key, JSON.stringify(most_recent_entries));
+          });
+        });
 
       } catch (ex) {
       }
