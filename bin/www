@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 var debug = require('debug')('databroker');
-var app = require('../app');
+var bits = require('../app');
 var conf = require('../conf/conf.json');
 
-app.set('port', process.env.PORT || conf.http_server.port);
+var port = process.env.PORT || conf.http_server.port;
 
-var server = app.listen(app.get('port'), function() {
+var server = bits.server.listen(port, function() {
   debug('Express server listening on port ' + server.address().port);
 });
