@@ -13,6 +13,6 @@ $(function () {
     });
 
     socket.on('connect', function () {
-        socket.emit('devices', JSON.stringify(['rPI_46_1047_1'/*, 'rPI_46_1047_3'*/]));
+        socket.emit('devices', JSON.stringify(['rPI_46_1047_1', 'rPI_30_1071_1']));
     });
 });
