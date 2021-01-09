@@ -83,6 +83,13 @@ function convert_data_for_day_view(data, config) {
         });
       }
       break;
+
+      default: {
+        data.forEach(function (entry) {
+          set_value(results, entry["timestamp"], sensor_id, entry[sensor_id], sensor_config.period_unit);
+        });
+      }
+      break;
     }
   });
 
