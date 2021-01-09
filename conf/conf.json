@@ -5,7 +5,7 @@
 
   "mqtt_server": {
 
-    "address" : "labbroker.soton.ac.uk",
+    "address" : "iotgate.ecs.soton.ac.uk",
     "port"    : 1883,
 
     "max_health_readings" : 1000
@@ -198,6 +198,56 @@
       "sensors": {
         "0": { "label": "Pressure Sensor 1", "type": "pressure", "sensor_model":"Leybold Center Two", "sensor": "0", "units_label": "millibar", "period": 1, "period_unit": "minute" },
         "1": { "label": "Pressure Sensor 2", "type": "pressure", "sensor_model":"Leybold Center Two", "sensor": "1", "units_label": "millibar", "period": 1, "period_unit": "minute" }
+      },
+
+      "tags": {
+       "no reports" : { }
+      }
+    },
+
+    "rPI_46_1047_5": {
+
+      "type": "Raspberry Pi 3",
+
+      "building" : "46",
+      "room" : "1047",
+      "site" : "Highfield Campus",
+
+      "contact" : "dgc",
+
+      "version": "Raspian",
+
+      "label": "Spitfire laser power/position",
+
+      "sensors": {
+        "sp": { "label": "Spitfire Power", "type": "power", "sensor_model":"Unknown", "units_label": "mW", "period": 1, "period_unit": "minute" },
+        "sxo": { "label": "Spitfire X Offset", "type": "displacement", "sensor_model":"Unknown", "units_label": "?", "period": 1, "period_unit": "minute" },
+        "syo": { "label": "Spitfire Y Offset", "type": "displacement", "sensor_model":"Unknown", "units_label": "?", "period": 1, "period_unit": "minute" }
+      },
+
+      "tags": {
+       "no reports" : { }
+      }
+    },
+
+    "rPI_46_1047_5a": {
+
+      "type": "Raspberry Pi 3",
+
+      "building" : "46",
+      "room" : "1047",
+      "site" : "Highfield Campus",
+
+      "contact" : "dgc",
+
+      "version": "Raspian",
+
+      "label": "Tsunami laser power/position",
+
+      "sensors": {
+        "tp": { "label": "Tsunami Power", "type": "power", "sensor_model":"Unknown", "units_label": "mW", "period": 1, "period_unit": "minute" },
+        "txo": { "label": "Tsunami X Offset", "type": "displacement", "sensor_model":"Unknown", "units_label": "?", "period": 1, "period_unit": "minute" },
+        "tyo": { "label": "Tsunami Y Offset", "type": "displacement", "sensor_model":"Unknown", "units_label": "?", "period": 1, "period_unit": "minute" }
       },
 
       "tags": {
