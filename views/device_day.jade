@@ -22,25 +22,33 @@ block content
   if image_uri
     img(width=1000 height=600 src=image_uri)
 
-  div.graph_container
-
-  h2 Downloads
-
   script!= device_configuration
   script!= data
 
-  ul
-    li
-      span Raw data (as 
-      a(href="../data.json?day=#{dateformat(date, 'yyyymmdd')}&raw=true") JSON
-      span , 
-      a(href="../data.csv?day=#{dateformat(date, 'yyyymmdd')}&raw=true") CSV
-      span  or 
-      a(href="../data.tsv?day=#{dateformat(date, 'yyyymmdd')}&raw=true") TSV
-      span .)
-    li
-      span Processed data (as 
-      a(href="../data.csv?day=#{dateformat(date, 'yyyymmdd')}") CSV
-      span  or 
-      a(href="../data.tsv?day=#{dateformat(date, 'yyyymmdd')}") TSV
-      span .)
+  div.graph_container
+
+    div.graphs
+      div#graph
+      div#graph2
+
+    div.rhs
+
+      h3 Legend
+      div.legend
+        div#keys
+
+      h3 Range
+      div#controls
+
+      h3 Download
+      p
+        div
+          a(href="../data.json?day=#{dateformat(date, 'yyyymmdd')}&raw=true") Raw JSON
+        div
+          a(href="../data.csv?day=#{dateformat(date, 'yyyymmdd')}&raw=true") Raw CSV
+        div
+          a(href="../data.tsv?day=#{dateformat(date, 'yyyymmdd')}&raw=true") Raw TSV
+        div
+          a(href="../data.csv?day=#{dateformat(date, 'yyyymmdd')}") Processed CSV
+        div
+          a(href="../data.tsv?day=#{dateformat(date, 'yyyymmdd')}") Processed TSV

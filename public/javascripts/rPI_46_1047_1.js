@@ -13,11 +13,11 @@ function lineGraph(graphSettings) {
     var settings = graphSettings.defaults;
 
     graphSettings.columns.forEach(function (id) {
-      settings.visible[id] = d3.select(graphSettings.selector + " #vis-" + id).property("checked");
+      settings.visible[id] = d3.select("#vis-" + id).property("checked");
     });
 
     ['min_y', 'max_y', 'start_time', 'end_time'].forEach(function (key) {
-      var val = d3.select(graphSettings.selector + " #" + key).node().value;
+      var val = d3.select("#" + key).node().value;
       settings[key] = val;
     });
 
@@ -36,9 +36,9 @@ function lineGraph(graphSettings) {
 
   function setLineVisibility(id) {
 
-    var checked = d3.select(graphSettings.selector + " #vis-" + id).property("checked");
+    var checked = d3.select("#vis-" + id).property("checked");
 
-    var el = d3.selectAll(graphSettings.selector + " .path-" + id);
+    var el = d3.selectAll(".path-" + id);
 
     if (checked) {
       el.style("display", null);
@@ -101,11 +101,11 @@ function lineGraph(graphSettings) {
       .x(function (d) { return x(d.xValue); })
       .y(function (d) { return y(d.yValue); });
 
-    d3.select(graphSettings.selector + " > *").remove();
+    d3.select("div#graph > *").remove();
+    d3.select("div#controls > *").remove();
+    d3.select("div#keys > *").remove();
 
-    d3.select(graphSettings.selector).html("<div id='graph'></div><div id='legend'><div class='legend'><h3>Legend</h3><div id='keys'></div></div><h3>Controls</h3><div id='controls'></div></div>");
-
-    var svg = d3.select(graphSettings.selector + " > div#graph").append("svg")
+    var svg = d3.select("div#graph").append("svg")
       .attr("width", width + graphSettings.margin.left + graphSettings.margin.right)
       .attr("height", height + graphSettings.margin.top + graphSettings.margin.bottom)
       .append("g")
@@ -226,9 +226,9 @@ function lineGraph(graphSettings) {
 
 
 
-    d3.select(graphSettings.selector + " div#controls > div").remove();
+    d3.select("div#controls > div").remove();
 
-    var controlsElement = d3.select(graphSettings.selector + " div#controls");
+    var controlsElement = d3.select("div#controls");
 
     controlsElement.append("div").html("<table>" +
       "<tr><th>Min Y</th><td><input id='min_y'></input></td></tr>" +
@@ -293,16 +293,16 @@ function lineGraph(graphSettings) {
       "<input class='reset' type='button' value='Reset'></input>");
 
 
-    controlsElement.select(graphSettings.selector + ' input.update')
+    controlsElement.select('input.update')
       .on('click', useSettings);
 
-    controlsElement.select(graphSettings.selector + ' input.reset')
+    controlsElement.select('input.reset')
       .on('click', resetSettings);
 
     // Legend
 
     {
-      var legendKeys = d3.select(graphSettings.selector + " div#keys");
+      var legendKeys = d3.select("div#keys");
 
       legendKeys.selectAll("*").remove();
 
@@ -325,7 +325,7 @@ function lineGraph(graphSettings) {
         settings[key] = defaults[key];
       }
 
-      d3.select(graphSettings.selector + " #" + key).node().value = settings[key];
+      d3.select("#" + key).node().value = settings[key];
     });
 
     graphSettings.columns.forEach(function (id) {
@@ -353,7 +353,6 @@ $('window').ready(function () {
 
   lineGraph({
     settings_id: "rPI_46_1047_1",
-    selector: "div.graph_container",
     color: d3.scale.category10(),
     width: 860,
     height: 600,

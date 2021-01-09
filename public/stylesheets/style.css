@@ -175,17 +175,21 @@ span.tag {
   border-radius: 3px;
 }
 
-div#graph {
+div.graphs {
   display: inline-block;
   vertical-align: top;
   width: 800px;
 }
 
-div#legend {
+div.rhs {
   display: inline-block;
   vertical-align: top;
   margin-left: 20px;
   width: 160px;
+}
+
+div.rhs h3 {
+  margin-top: 20px;
 }
 
 /* from d3test */
@@ -256,5 +260,10 @@ div#controls table td select {
 
 .area {
   stroke-width: 0.0;
+}
+
+
+#top_container, #bottom_container {
+    display: flex;
 }
 
