@@ -1,4 +1,16 @@
 {
+  "http_server": {
+    "port" : 3100
+  },
+
+  "mqtt_server": {
+
+    "address" : "example.com",
+    "port"    : 1883,
+
+    "max_health_readings" : 1000
+  },
+
   "devices": {
 
     "Arduino_Test" : {
