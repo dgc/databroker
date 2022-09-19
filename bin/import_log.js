@@ -81,7 +81,10 @@ function processLog(options, callback) {
           days[base].push(data);
 
         } catch (err) {
-          console.log(err);
+
+          if (import_lines[i].trim() != "") {
+            console.log(err);
+          }
         }
       }
 
