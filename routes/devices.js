@@ -10,7 +10,6 @@ var csv = require('csv');
 var dateformat = require('dateformat');
 var fs = require('fs');
 var archiver = require('archiver');
-var moment = require('moment');
 var async = require('async');
 var calendar = require('calendar');
 
