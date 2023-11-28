@@ -1,6 +1,6 @@
 
 $(function () {
-    var socket = io();
+    var socket = io(undefined, { path: "/graphs/socket.io/" });
     //$('form').submit(function () {
     //    socket.emit('randomword', $('#m').val());
     //    $('#m').val('');

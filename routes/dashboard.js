@@ -7,7 +7,7 @@ var parameters = require('../lib/parameters');
 router.get('/', function (req, res) {
   res.render('dashboard', {
     breadcrumbs: [
-      { label: 'Home', uri: '/' },
+      { label: 'Home', uri: '/graphs/' },
       { label: 'Dashboard' }
     ]
   });

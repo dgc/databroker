@@ -11,7 +11,7 @@ mixin device_list(devices)
     each details, device_id in devices
       tr
         td
-          a(href="/devices/" + device_id) #{details.label}
+          a(href="/graphs/devices/" + device_id) #{details.label}
 
         if details.tags["no reports"]
           td

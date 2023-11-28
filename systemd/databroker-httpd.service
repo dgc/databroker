@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=dgc
 WorkingDirectory=/home/dgc/databroker
-ExecStart=/usr/bin/node /home/dgc/databroker/bin/www
+ExecStart=/home/dgc/.nvm/versions/node/v15.11.0/bin/node /home/dgc/databroker/bin/www
 Restart=always
 RestartSec=60
 StartLimitIntervalSec=0
