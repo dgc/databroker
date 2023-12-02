@@ -1,0 +1,102 @@
+policy_module(databroker, 1.0.0)
+
+########################################
+#
+# Declarations
+#
+
+require {
+
+  type httpd_t;
+  type databroker_port_t;
+  type databroker_t;
+  type cert_t;
+  type user_home_dir_t;
+  type cgroup_t;
+  type net_conf_t;
+  type node_t;
+  type proc_t;
+
+  class process execmem;
+  class tcp_socket { accept bind connect read write create getattr getopt listen name_bind setopt };
+  class udp_socket { connect create getattr };
+  class netlink_route_socket { bind read write create getattr nlmsg_read };
+}
+
+type databroker_t;
+type databroker_exec_t;
+init_daemon_domain(databroker_t, databroker_exec_t)
+
+# permissive databroker_t;
+
+########################################
+#
+# databroker local policy
+#
+allow databroker_t self:fifo_file rw_fifo_file_perms;
+allow databroker_t self:unix_stream_socket create_stream_socket_perms;
+
+domain_use_interactive_fds(databroker_t)
+
+files_read_etc_files(databroker_t)
+
+miscfiles_read_localization(databroker_t)
+
+# General read-only file type for databroker. This is used for all files except
+# for the data directory.
+
+type databroker_file_t;
+files_type(databroker_file_t);
+
+allow databroker_t databroker_file_t:dir  { getattr open read search };
+allow databroker_t databroker_file_t:file { getattr open read };
+
+# General read/write file type for databroker. This is used for the "data"
+# directory.
+
+type databroker_data_t;
+files_type(databroker_data_t);
+
+allow databroker_t databroker_data_t:dir  { getattr create open read write search add_name remove_name };
+allow databroker_t databroker_data_t:file { getattr create open read write unlink };
+
+# Define MQTT port type. Mosquitto is not SELinux constrained and so we define
+# the port here and allow databroker to connect to it.
+
+type mqtt_port_t;
+corenet_port(mqtt_port_t)
+
+allow databroker_t mqtt_port_t:tcp_socket { name_connect };
+
+# Define databroker port type and allow Apache to connect to it specifically
+# without having to use the "httpd_can_network_connect" boolean.
+
+type databroker_port_t;
+corenet_port(databroker_port_t)
+
+allow httpd_t databroker_port_t:tcp_socket { name_connect };
+allow databroker_t databroker_port_t:tcp_socket { name_bind };
+
+# Various rules needed by Node.js 
+
+allow databroker_t self:netlink_route_socket { bind read write create getattr nlmsg_read };
+allow databroker_t self:process execmem;
+allow databroker_t self:tcp_socket { accept bind read write connect create getattr getopt listen setopt };
+allow databroker_t cert_t:dir search;
+allow databroker_t cert_t:file { getattr open read };
+allow databroker_t net_conf_t:file { getattr open read };
+allow databroker_t node_t:tcp_socket node_bind;
+
+# Main entry point is a shell script so these are needed.
+
+corecmd_exec_bin(databroker_t)
+corecmd_mmap_bin_files(databroker_t)
+
+# Don't audit some things that Node.js does but isn't necessary for databroker
+# to operate.
+
+dontaudit databroker_t user_home_dir_t:dir search;
+dontaudit databroker_t cgroup_t:dir search;
+dontaudit databroker_t self:udp_socket { connect create getattr };
+dontaudit databroker_t proc_t:file read;
+
