@@ -1,7 +1,7 @@
 extends layout
 
 block head
-  script(type="text/ecmascript", src="/javascripts/" + device_id + ".js")
+  script(type="text/ecmascript", src="/graphs/javascripts/" + device_id + ".js")
 
 block content
   script!= "var today = new Date('" + date + "');"
@@ -43,12 +43,12 @@ block content
       h3 Download
       p
         div
-          a(href="../data.json?day=#{dateformat(date, 'yyyymmdd')}&raw=true") Raw JSON
+          a(href=`../data.json?day=${dateformat(date, 'yyyymmdd')}&raw=true`) Raw JSON
         div
-          a(href="../data.csv?day=#{dateformat(date, 'yyyymmdd')}&raw=true") Raw CSV
+          a(href=`../data.csv?day=${dateformat(date, 'yyyymmdd')}&raw=true`) Raw CSV
         div
-          a(href="../data.tsv?day=#{dateformat(date, 'yyyymmdd')}&raw=true") Raw TSV
+          a(href=`../data.tsv?day=${dateformat(date, 'yyyymmdd')}&raw=true`) Raw TSV
         div
-          a(href="../data.csv?day=#{dateformat(date, 'yyyymmdd')}") Processed CSV
+          a(href=`../data.csv?day=${dateformat(date, 'yyyymmdd')}`) Processed CSV
         div
-          a(href="../data.tsv?day=#{dateformat(date, 'yyyymmdd')}") Processed TSV
+          a(href=`../data.tsv?day=${dateformat(date, 'yyyymmdd')}`) Processed TSV

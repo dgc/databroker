@@ -1,0 +1,40 @@
+
+## <summary>policy for databroker</summary>
+
+########################################
+## <summary>
+##	Execute databroker_exec_t in the databroker domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`databroker_domtrans',`
+	gen_require(`
+		type databroker_t, databroker_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	domtrans_pattern($1, databroker_exec_t, databroker_t)
+')
+
+######################################
+## <summary>
+##	Execute databroker in the caller domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`databroker_exec',`
+	gen_require(`
+		type databroker_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	can_exec($1, databroker_exec_t)
+')

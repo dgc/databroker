@@ -1,0 +1,13 @@
+[Unit]
+Description=DataBroker
+After=network.target
+
+[Service]
+WorkingDirectory=/srv/databroker
+ExecStart=/srv/databroker/bin/www
+Restart=always
+RestartSec=60
+StartLimitIntervalSec=0
+
+[Install]
+WantedBy=multi-user.target

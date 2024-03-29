@@ -1,0 +1,4 @@
+/srv/databroker/bin/www	    --    gen_context(system_u:object_r:databroker_exec_t,s0)
+
+/srv/databroker/data(/.*)?  unconfined_u:object_r:databroker_data_t:s0
+/srv/databroker(/.*)?  unconfined_u:object_r:databroker_file_t:s0
