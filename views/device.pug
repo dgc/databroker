@@ -110,7 +110,7 @@ block content
   if most_recent_month
     p
       span The readings for the most recent month are 
-      a(href="/graphs/devices/" + device_id + "/readings/" + most_recent_month) here
+      a(href=`${config.webPath}/devices/${device_id}/readings/${most_recent_month}`) here
       span .
   else
     p There are no readings for this device.

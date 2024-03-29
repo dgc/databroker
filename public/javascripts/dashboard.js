@@ -1,6 +1,8 @@
 
+const webPath = document.currentScript.getAttribute("data-webpath");
+
 $(function () {
-    var socket = io(undefined, { path: "/graphs/socket.io/" });
+    var socket = io(undefined, { path: `${webPath}/socket.io/` });
     //$('form').submit(function () {
     //    socket.emit('randomword', $('#m').val());
     //    $('#m').val('');

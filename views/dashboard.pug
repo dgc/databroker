@@ -1,7 +1,7 @@
 extends layout
 
 block head
-  script(type="text/ecmascript", src="/graphs/javascripts/dashboard.js")
+  script(type="text/ecmascript", data-webpath=`${config.webPath}` src=`${config.webPath}/javascripts/dashboard.js`)
 
 block content
   h1 Dashboard

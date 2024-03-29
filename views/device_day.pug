@@ -1,7 +1,7 @@
 extends layout
 
 block head
-  script(type="text/ecmascript", src="/graphs/javascripts/" + device_id + ".js")
+  script(type="text/ecmascript", src=`${config.webPath}/javascripts/${device_id}.js`)
 
 block content
   script!= "var today = new Date('" + date + "');"

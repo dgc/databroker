@@ -7,9 +7,11 @@
 
     "address" : "example.com",
     "port"    : 1883,
-
-    "max_health_readings" : 1000
   },
+
+  "webPath": "/graphs",
+
+  "max_health_readings": 1000,
 
   "devices": {
 

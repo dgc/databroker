@@ -128,8 +128,9 @@ router.get('/', function(req, res) {
     });
 
     res.render('devices', {
+      config: configuration,
       breadcrumbs: [
-        { label: 'Home', uri: '/graphs/' },
+        { label: 'Home', uri: `${configuration.webPath}/` },
         { label: 'Devices' }
       ],
       devices: configuration.devices,
@@ -196,9 +197,10 @@ router.get('/:device_id', function(req, res) {
         }
     
         res.render('device', {
+          config: configuration,
           breadcrumbs: [
-            { label: 'Home', uri: '/graphs/' },
-            { label: 'Devices', uri: '/graphs/devices' },
+            { label: 'Home', uri: `${configuration.webPath}/` },
+            { label: 'Devices', uri: `${configuration.webPath}/devices` },
             { label: configuration.devices[device_id].label }
           ],
           configuration: configuration,
@@ -274,10 +276,11 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
       }
 
       res.render('device_month', {
+        config: configuration,
         breadcrumbs: [
-          { label: 'Home', uri: '/graphs/' },
-          { label: 'Devices', uri: '/graphs/devices' },
-          { label: configuration.devices[device_id].label, uri: '/graphs/devices/' + device_id },
+          { label: 'Home', uri: `${configuration.webPath}/` },
+          { label: 'Devices', uri: `${configuration.webPath}/devices` },
+          { label: configuration.devices[device_id].label, uri: `${configuration.webPath}/devices/${device_id}` },
           { label: dateformat(date, "mmmm yyyy") }
         ],
         device_id: device_id,
@@ -382,9 +385,10 @@ router.get('/views/:view_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
   }, function (err, day_data) {
 
     res.render('view_month', {
+      config: configuration,
       breadcrumbs: [
-        { label: 'Home', uri: '/graphs/' },
-        { label: 'Views', uri: '/graphs/views' },
+        { label: 'Home', uri: `${configuration.webPath}/` },
+        { label: 'Views', uri: `${configuration.webPath}/views` },
 //          { label: configuration.devices[device_id].label, uri: '/graphs/devices/' + device_id },
         { label: dateformat(date, "mmmm yyyy") }
       ],
@@ -441,11 +445,12 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
   storage.get(data_key, function(err, data) {
 
     res.render('device_day', {
+      config: configuration,
       breadcrumbs: [
-        { label: 'Home', uri: '/graphs/' },
-        { label: 'Devices', uri: '/graphs/devices' },
-        { label: configuration.devices[device_id].label, uri: '/graphs/devices/' + device_id },
-        { label: dateformat(date, "mmmm yyyy"), uri: year + "-" + month },
+        { label: 'Home', uri: `${configuration.webPath}/` },
+        { label: 'Devices', uri: `${configuration.webPath}/devices` },
+        { label: configuration.devices[device_id].label, uri: `${configuration.webPath}/devices/${device_id}` },
+        { label: dateformat(date, "mmmm yyyy"), uri: `${configuration.webPath}/devices/${device_id}/readings/${year}-${month}` },
         { label: dateformat(date, "d") }
       ],
       device_id: device_id,
