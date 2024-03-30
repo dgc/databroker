@@ -143,7 +143,7 @@ router.get('/', function(req, res) {
 
 function get_log_days(device_id, result_func) {
 
-  var key_pattern = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] " + device_id;
+  var key_pattern = `[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] ${device_id}`;
 
   storage.keys(key_pattern, function (err, keys) {
     keys = _.map(keys, function(key) { return key.toString('utf-8'); });
@@ -259,7 +259,7 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2})', function(req, res) {
     nextMonth.setMonth(date.getMonth() + 1);
   }
 
-  var key_pattern = yearString + "-" + monthString + "-[0-9][0-9] " + device_id;
+  var key_pattern = `${yearString}-${monthString}-[0-9][0-9] ${device_id}`;
 
   storage.keys(key_pattern, function (err, data_keys) {
 
@@ -432,9 +432,9 @@ router.get('/:device_id/readings/:date(\\d{4}-\\d{2}-\\d{2})', function(req, res
   var month = req.params.date.substring(5, 7);
   var day   = req.params.date.substring(8, 10);
 
-  var data_key = year + "-" + month + "-" + day + " " + device_id;
+  var data_key = `${year}-${month}-${day} ${device_id}`;
 
-  var date = new Date(year + "-" + month + "-" + day);
+  var date = new Date(`${year}-${month}-${day}`);
 
   var nextDay = new Date(date);
   var prevDay = new Date(date);
