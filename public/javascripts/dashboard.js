@@ -1,17 +1,17 @@
 
 const webPath = document.currentScript.getAttribute("data-webpath");
 
-$(function () {
-    var socket = io(undefined, { path: `${webPath}/socket.io/` });
-    //$('form').submit(function () {
-    //    socket.emit('randomword', $('#m').val());
-    //    $('#m').val('');
-    //    return false;
-    //});
+window.addEventListener('load', function () {
+
+    const socket = io(undefined, { path: `${webPath}/socket.io/` });
+
     socket.on('readings', function (msg) {
-        var entry = $('<div>');
-        entry.text(msg);
-        $('.readings').append(entry);
+
+
+        const entry = document.createElement("div");
+        entry.append(msg);
+
+        document.querySelector('.readings').append(entry);
     });
 
     socket.on('connect', function () {

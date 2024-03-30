@@ -16,7 +16,7 @@ const readings = {
   tyo: { min: -5, max: 5 },
 };
 
-$('window').ready(function () {
+window.addEventListener('load', function () {
 
   Object.keys(month_data).forEach(function (key) {
 

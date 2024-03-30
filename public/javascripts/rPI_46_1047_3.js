@@ -312,7 +312,7 @@ function lineGraph(graphSettings) {
   renderGraph();
 }
 
-$('window').ready(function() {
+window.addEventListener('load', function () {
 
   lineGraph({
     settings_id: "rPI_46_1047_3",

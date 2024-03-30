@@ -6,7 +6,7 @@ if (!Array.prototype.last) {
   };
 };
 
-$('window').ready(function () {
+window.addEventListener('load', function () {
 
   Object.keys(month_data).forEach(function (key) {
 

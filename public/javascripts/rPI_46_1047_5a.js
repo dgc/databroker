@@ -349,7 +349,7 @@ function lineGraph(graphSettings) {
   renderGraph();
 }
 
-$('window').ready(function () {
+window.addEventListener('load', function () {
 
   d3.select("div.graph_container")
     .append("div")
